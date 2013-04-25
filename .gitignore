@@ -21,3 +21,4 @@
 /gh-pages/
 *flymake.hs
 dist
+cabal-dev

@@ -26,21 +26,6 @@ wmom = function(rets, weights) {
 
 ## wmom:1 ends here
 
-## [[file:~/projects/hft/hft.org::*wmom][wmom:1]]
-
-rets=sp500
-weights=weights
-#wmom = function(rets, weights) {
-  mean=as.double(filter(rets,weights$mean,sides=1))
-  mean[1:length(weights$mean)]=cumsum(rets[1:length(weights$mean)]*as.matrix(weights$mean))
-  xvol=(rets-mean)^2
-  vol=as.double(filter(xvol,weights$vol,sides=1))^0.5
-  vol[1:length(weights$vol)]=cumsum(xvol[1:length(weights$vol)]*as.matrix(weights$vol))^0.5
-  wmom=data.frame(mean=mean, vol=vol)
-#}
-
-## wmom:1 ends here
-
 ## [[file:~/projects/hft/hft.org::*moments%20regression][moments\ regression:1]]
 
 l=251
@@ -63,17 +48,6 @@ wmean = function(rets, weights) {
   wm[1:length(weights)]=cumsum(rets[1:length(weights)]*as.matrix(weights))
   wmean=wm
 }
-
-## ma\(20\)\ price\ performance:1 ends here
-
-## [[file:~/projects/hft/hft.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
-
-rets=sp500
-weights=seq(0.95,0.05,-0.05)
-#wmean = function(rets, weights) {
-  wmean=as.double(filter(rets,weights,sides=1))
-  wmean[1:length(weights)]=cumsum(rets[1:length(weights)]*as.matrix(weights))
-#}
 
 ## ma\(20\)\ price\ performance:1 ends here
 
@@ -180,18 +154,18 @@ gap.forecast.norm = (c(0,gap[1:(length(price)-1)])+price.ma.delta)/c(0.005,vol.e
 sig.forecast = pnorm(gap.forecast.norm)
 sig = as.double(gap>0)
 
-df1 = data.frame(price,price.ma,price.ma.forecast,sig,sig.forecast,
+df = data.frame(rets=c(0,sp500),price,price.ma,price.ma.forecast,sig,sig.forecast,
                  time=0:(length(price)-1))
-colnames(df1) = c("price","price.ma","forecast.ma","sig","sig.forecast","time")
+colnames(df) = c("rets","price","price.ma","forecast.ma","sig","sig.forecast","time")
 
 require(ggplot2)
 require(reshape2)    
 
-df1.melt = melt(df1[1:100,],measure.vars=c("price","price.ma","sig","sig.forecast"))
+df.melt = melt(df[1:100,],measure.vars=c("price","price.ma","sig","sig.forecast"))
 
-df1.melt$type = c("sig","price")[as.double(is.element(df1.melt$variable,as.factor(c("price","price.ma"))))+1]
+df.melt$type = c("sig","price")[as.double(is.element(df.melt$variable,as.factor(c("price","price.ma"))))+1]
 
-ggplot(df1.melt, aes(x = time, y = value)) +
+ggplot(df.melt, aes(x = time, y = value)) +
   geom_line(aes(color = variable)) +
   facet_grid(type ~ ., scales = "free_y")
 dev.off()
@@ -202,6 +176,7 @@ dev.off()
 
 png(filename="assets/sig.returns.png")
 require(bigvis)
+require(grid)
 tweak <- list(
   theme(
     legend.position = "bottom",
@@ -213,7 +188,7 @@ tweak <- list(
   scale_fill_gradient(low="#e5e5e5", high = "#444548")
 )
 
-ret.sum = condense(bin(df2$sig.forecast,0.02),bin(df2$rets,0.002))
+ret.sum = condense(bin(df$sig.forecast,0.02),bin(df$rets,0.002))
 rs = peel(ret.sum,.95)
 autoplot(rs) + tweak
 dev.off()
@@ -233,10 +208,10 @@ tweak <- list(
     panel.margin = unit(0.25, "cm")
   )
 )
-ret.sum = condense(bin(df2$sig.forecast,0.02),z=df2$rets, summary = "sd")
+ret.sum = condense(bin(df$sig.forecast,0.02),z=df$rets, summary = "sd")
 
 d = data.frame(
-  ret = rep(ret.sum$df2.sig.forecast,3),
+  ret = rep(ret.sum$df.sig.forecast,3),
   summary = rep(c("count","mean","sd"), each = nrow(ret.sum)),
   value = c(ret.sum$.count, ret.sum$.mean*251, ret.sum$.sd*(251^.5))
 )
@@ -260,7 +235,7 @@ levels(smooth$summary)[1] <- "count"
 qplot(ret, value, data = d, geom = "line") +
   facet_grid(summary ~ ., scales = "free") +
   tweak +
-  geom_line(data = smooth, aes(x=df2.sig.forecast, y=value),colour="#000099") 
+  geom_line(data = smooth, aes(x=df.sig.forecast, y=value),colour="#000099") 
   
 
 dev.off()

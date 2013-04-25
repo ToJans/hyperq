@@ -1470,7 +1470,7 @@ main = do
 #+end_src
 
 
-*** Hft.Iqtest development
+*** Iqtest development
 SCHEDULED: <2013-05-04 Sat>
 :LOGBOOK:
 CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
@@ -1977,192 +1977,6 @@ from the R database of the one day quote ticks...
     g + geom_point()
     ggsave("img/quote-latency-averagecondensed.svg")
   #+end_src
-
-
-** latency research
-
-*** feed ping latency
-  
-From the raw iqfeed heartbeat:
-
-    #+begin_src R
-      t = read.csv("data/streamt.txt",header=FALSE,as.is=TRUE)
-      pingtime = strptime(t[,3], "%Y%m%d %H:%M:%S")
-      stamp = strptime(paste(strftime(pingtime,"%Y%m%d"), t[,1], sep=" "), "%Y%m%d %H:%M:%OS")    
-      latency = as.double(stamp - pingtime)
-      df = data.frame(pingtime=pingtime, latency=latency)
-      summary(df)
-    #+end_src
-
-    #+results:
-    | Min.   :2013-03-14 07:30:57 | Min.   :-0.90665 |
-    | 1st Qu.:2013-03-14 17:15:41 | 1st Qu.:-0.01492 |
-    | Median :2013-03-15 03:02:15 | Median : 0.14950 |
-    | Mean   :2013-03-15 03:01:28 | Mean   : 0.38876 |
-    | 3rd Qu.:2013-03-15 12:46:33 | 3rd Qu.: 0.22824 |
-    | Max.   :2013-03-15 22:33:24 | Max.   : 7.89887 |
-    | NA's   :1                   | NA's   :1        |
-
-
-
-
-    #+begin_src R
-    require(ggplot2)
-    qplot(data=df, x=pingtime, y=latency)
-    ggsave("img/ping-latency.svg")
-    #+end_src
-
-    #+results:
-
-    [[file:img/ping-latency.svg]]
-
-
-
-
-
-#+begin_src R
-install.packages("devtools")
-devtools::install_github("bigvis")
-#+end_src
-
-http://vita.had.co.nz/papers/bigvis.html
-
-
-- switch to numeric
-- 2d bin
-#+begin_src R
-  dfn = condense(bin(as.double(df$pingtime),60),bin(df$latency,.1))
-  dfg = data.frame(as.POSIXct(dfn[,1],origin="1960-01-01", tz="GMT"),dfn[,2],dfn[,3])
-  colnames(dfg) = c("Time","Latency","Count")
-  g = ggplot(data=dfg,aes(x=Time,y=Latency))
-  g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548")
-  ggsave("ping-latency-condensed.svg")
-
-#+end_src
-
-
-*** event latency
-
-from the R database
-
-1. open data
-  #+begin_src R
-  
-  rm(list = ls())
-  require("mmap")
-  require("rindex")
-  require("plyr")
-  require("stringr")
-  raw.stream = "streamqh"
-  # where the mmap db is located
-  db.path = paste("data/",raw.stream,"/",sep="")
-  
-  load(paste(db.path,".Rdbinfo",sep=""))
-  #m = mmap(main.filename, mode=st)
-  stream = NULL
-  stream$stamp = mmap(paste(db.path,fields[1],".data",sep=""), mode=double())
-  stream$code = mmap(paste(db.path,fields[2],".data",sep=""), mode=char(1))
-  stream$symbol = mmap(paste(db.path,fields[3],".data",sep=""), mode=char(ticker.length))
-  stream$trade = mmap(paste(db.path,fields[4],".data",sep=""), mode=double())
-  stream$vol = mmap(paste(db.path,fields[5],".data",sep=""), mode=integer())
-  stream$tradetime = mmap(paste(db.path,fields[6],".data",sep=""), mode=double())
-  stream$tradeex = mmap(paste(db.path,fields[7],".data",sep=""), mode=double())
-  stream$volex = mmap(paste(db.path,fields[8],".data",sep=""), mode=integer())
-  stream$tradetimeex = mmap(paste(db.path,fields[9],".data",sep=""), mode=double())
-  stream$voltot = mmap(paste(db.path,fields[10],".data",sep=""), mode=integer())
-  stream$bid = mmap(paste(db.path,fields[11],".data",sep=""), mode=double())
-  stream$bidvol = mmap(paste(db.path,fields[12],".data",sep=""), mode=integer())
-  stream$bidtime = mmap(paste(db.path,fields[13],".data",sep=""), mode=double())
-  stream$ask = mmap(paste(db.path,fields[14],".data",sep=""), mode=double())
-  stream$askvol = mmap(paste(db.path,fields[15],".data",sep=""), mode=integer())
-  stream$asktime = mmap(paste(db.path,fields[16],".data",sep=""), mode=double())
-  stream$event = mmap(paste(db.path,fields[17],".data",sep=""), mode=char(12))
-  stream$id = mmap(paste(db.path,fields[18],".data",sep=""), mode=integer())
-  
-  #+end_src
-
-#+results:
-
-2. Define events and extract relevant times
-  #+begin_src R
-  n = length(stream$event[])
-  
-  tC = grepl("C",stream$event[])
-  tO = grepl("O",stream$event[])
-  ta = grepl("a",stream$event[])
-  tb = grepl("b",stream$event[])
-  ta = ta & !(tC | tO)
-  tb = tb & !(tC | tO | ta)
-  tother = !(ta | tb | tC | tO)
-  
-  event.category = (1 * tC) + (2 * tO) + (3 * ta) + (4 * tb) + (5 * tother)
-  
-  event.time = (stream$tradetime[] * tC +
-          stream$tradetimeex[] * tO +
-          stream$asktime[] * ta +
-          stream$bidtime[] * tb +
-          stream$tradetime[] * tother)
-  
-  event.time.posix = as.POSIXct(event.time,origin="1960-01-01", tz="GMT")
-  event.stamp = stream$stamp[]
-  
-  event.latency = event.stamp - event.time  
-  
-  event.df = data.frame(symbol=stream$symbol[],event.category,event.time, event.stamp, event.latency)
-  summary(event.df)
-  #+end_src
-
-  #+results:
-| @ESM13 :2553308 | Min.   :1.000 | Min.   :1.366e+09 | Min.   :1.366e+09 | Min.   :-85800.76 |
-| @NQM13 :1285545 | 1st Qu.:3.000 | 1st Qu.:1.366e+09 | 1st Qu.:1.366e+09 | 1st Qu.:     0.22 |
-| @YMM13 :1216006 | Median :3.000 | Median :1.366e+09 | Median :1.366e+09 | Median :     0.33 |
-| EBK13  : 917275 | Mean   :3.107 | Mean   :1.366e+09 | Mean   :1.366e+09 | Mean   :   226.44 |
-| @JYM13 : 844995 | 3rd Qu.:4.000 | 3rd Qu.:1.366e+09 | 3rd Qu.:1.366e+09 | 3rd Qu.:   600.22 |
-| EBM13  : 610827 | Max.   :5.000 | Max.   :1.366e+09 | Max.   :1.366e+09 | Max.   :  9818.25 |
-| (Other):1373320 | nil           | nil               | nil               | nil               |
-
-3. bigvis manipulations
-  #+begin_src R
-  require("bigvis")
-  require("ggplot2")
-  df1 = condense(bin(event.df$event.time,60),bin(event.df$event.latency,0.05))
-  df2 = df1[(df1$event.df.event.latency > 0) & (df1$event.df.event.latency < 1),]   
-  dfg = data.frame(as.POSIXct(df2[,1]+10*60*60,origin="1960-01-01", tz=""),df2[,2],df2[,3])
-  colnames(dfg) = c("Time","Latency","Count")
-  g = ggplot(data=dfg,aes(x=Time,y=Latency))
-  g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548")
-  ggsave("quote-latency-condensed.svg")
-
-  #+end_src
-
-
-4. symbols
-
-  #+begin_src R :results output
-  summary(as.factor(stream$symbol[]))
-  #+end_src
-
-  #+results:
-  : +SK13   +SPH13  @EDM13  @EDU13  @ESH13  @ESM13  @F1M13  @JYM13  @N1M13  @NQM13  
-  :  299398     108  120731  167649  273192 2553308   27715  844995   27357 1285545 
-  : @T1M13  @USNM13 @VMJ13  @YMM13  CRDJ13  EBK13   EBM13   
-  :    1524   54804    3146 1216006  397696  917275  610827
-
-5. emini latency
-  #+begin_src R
-  ind.emini = indexEQ(ind.symbol,"@ESM13 ")
-  df1 = condense(bin(event.df$event.time[ind.emini,],60),bin(event.df$event.latency[ind.emini,],0.05))
-  df2 = df1[(df1$event.df.event.latency > -1) & (df1$event.df.event.latency < 10),]   
-  dfg = data.frame(as.POSIXct(df2[,1]+10*60*60,origin="1960-01-01", tz=""),df2[,2],df2[,3])
-  colnames(dfg) = c("Time","Latency","Count")
-  g = ggplot(data=dfg,aes(x=Time,y=Latency))
-  g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548")
-  ggsave("quote-latency-condensed-emini.svg")
-
-  #+end_src
-
-
-
 
 
 ** Latency Research                                               :research:
@@ -3366,7 +3180,7 @@ The function:
 #+end_src
 
 - unit test
-  #+begin_src R :results silent
+  #+begin_src R :results silent :tangle no
   rets=sp500
   weights=weights
   #wmom = function(rets, weights) {
@@ -3407,17 +3221,17 @@ lm(formula = sp500 ~ hmean + hvol, data = data)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.229362 -0.004412  0.000193  0.004681  0.109353 
+-0.229363 -0.004412  0.000192  0.004681  0.109353 
 
 Coefficients:
              Estimate Std. Error t value Pr(>|t|)
-(Intercept) 6.054e-05  2.167e-04   0.279    0.780
-hmean       1.022e-01  1.338e-01   0.763    0.445
-hvol        2.199e-02  2.086e-02   1.054    0.292
+(Intercept) 6.146e-05  2.167e-04   0.284    0.777
+hmean       1.026e-01  1.338e-01   0.767    0.443
+hvol        2.198e-02  2.086e-02   1.053    0.292
 
-Residual standard error: 0.009785 on 15921 degrees of freedom
-Multiple R-squared:  7.927e-05,	Adjusted R-squared:  -4.635e-05 
-F-statistic: 0.631 on 2 and 15921 DF,  p-value: 0.5321
+Residual standard error: 0.009785 on 15924 degrees of freedom
+Multiple R-squared:  7.934e-05,	Adjusted R-squared:  -4.625e-05 
+F-statistic: 0.6317 on 2 and 15924 DF,  p-value: 0.5317
 
 Call:
 lm(formula = sp500.vol ~ hmean + hvol, data = data)
@@ -3428,15 +3242,15 @@ Residuals:
 
 Coefficients:
               Estimate Std. Error t value Pr(>|t|)    
-(Intercept) -1.992e-05  1.138e-05  -1.750   0.0802 .  
-hmean       -6.077e-02  7.030e-03  -8.644   <2e-16 ***
-hvol         1.496e-02  1.096e-03  13.656   <2e-16 ***
+(Intercept) -1.993e-05  1.138e-05  -1.751     0.08 .  
+hmean       -6.077e-02  7.029e-03  -8.645   <2e-16 ***
+hvol         1.496e-02  1.096e-03  13.657   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.000514 on 15921 degrees of freedom
+Residual standard error: 0.0005139 on 15924 degrees of freedom
 Multiple R-squared:  0.02527,	Adjusted R-squared:  0.02515 
-F-statistic: 206.4 on 2 and 15921 DF,  p-value: < 2.2e-16
+F-statistic: 206.4 on 2 and 15924 DF,  p-value: < 2.2e-16
 #+end_example
 
 So the regression indicates that historical mean and volatility strongly
@@ -3459,7 +3273,7 @@ price ma(20) signal.
 
 Weights as per the previous post analytics.
 
-#+begin_src R
+#+begin_src R :tangle no
   rets=sp500
   weights=seq(0.95,0.05,-0.05)
   #wmean = function(rets, weights) {
@@ -3478,6 +3292,8 @@ And a move to analytics based on log(1+return) to remove compounding issues.
   }
 #+end_src
 
+#+results:
+
 The headline sharpe ratio for the signal is much higher than long-only.
 
 #+begin_src R
@@ -3491,6 +3307,8 @@ The headline sharpe ratio for the signal is much higher than long-only.
 #+end_src
 
 #+results:
+| 0.380974902637794 |
+| 0.606306306908276 |
 
 | sharpe long-only    | 0.38 |
 | sharpe price ma(20) | 0.61 |
@@ -3546,6 +3364,8 @@ important principles:
 
 #+end_src
 
+#+results:
+
 #+begin_src R :exports both
 turnover = sum(abs(diff(sig)))/length(sig)*251
 x1=1
@@ -3553,7 +3373,7 @@ scost = sharpe.costs(sp500[(x1+1):length(sp500)]*sig[1:(length(sp500)-x1)],turno
 #+end_src
 
 #+results:
-: 0.341036560629536
+: 0.340845298070155
 
 This signal is economically significant is trade costs are below 0.1%.
 
@@ -3587,18 +3407,18 @@ lm(formula = sp500 ~ 0 + hmean + hvol, data = data)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.229372 -0.004404  0.000206  0.004693  0.109361 
+-0.229373 -0.004402  0.000205  0.004693  0.109361 
 
 Coefficients:
       Estimate Std. Error t value Pr(>|t|)    
-hmean 0.120902   0.115869   1.043 0.296763    
-hvol  0.027355   0.008171   3.348 0.000817 ***
+hmean 0.121620   0.115859   1.050 0.293862    
+hvol  0.027419   0.008171   3.356 0.000793 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.009785 on 15922 degrees of freedom
-Multiple R-squared:  0.000917,	Adjusted R-squared:  0.0007915 
-F-statistic: 7.307 on 2 and 15922 DF,  p-value: 0.0006733
+Residual standard error: 0.009785 on 15925 degrees of freedom
+Multiple R-squared:  0.0009223,	Adjusted R-squared:  0.0007968 
+F-statistic:  7.35 on 2 and 15925 DF,  p-value: 0.0006446
 
 Call:
 lm(formula = (sp500.vol - 0.005^2) ~ 0 + hmean + hvol, data = data)
@@ -3609,14 +3429,14 @@ Residuals:
 
 Coefficients:
         Estimate Std. Error t value Pr(>|t|)    
-hmean -0.0746523  0.0060890  -12.26   <2e-16 ***
-hvol   0.0109861  0.0004294   25.58   <2e-16 ***
+hmean -0.0746577  0.0060882  -12.26   <2e-16 ***
+hvol   0.0109856  0.0004294   25.59   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.0005142 on 15922 degrees of freedom
+Residual standard error: 0.0005142 on 15925 degrees of freedom
 Multiple R-squared:  0.04205,	Adjusted R-squared:  0.04193 
-F-statistic: 349.5 on 2 and 15922 DF,  p-value: < 2.2e-16
+F-statistic: 349.5 on 2 and 15925 DF,  p-value: < 2.2e-16
 #+end_example
 
 vol estimate
@@ -3667,34 +3487,34 @@ be turned into a probabilistic measure (what is the probability of
 the signal being long tomorrow?).
 
 #+begin_src R :results graphics :file assets/sig.example.png :exports both
-  price=c(0,cumsum(log(1+sp500)))
-  weights.av19 = rep(0.05,19)
-  weights.av20 = rep(0.05,20)
-  price.ma=as.double(filter(price,weights.av20,sides=1))
-  price.ma[1:length(weights.av20)]=cumsum(price[1:length(weights.av20)])/1:length(weights.av20)
-  gap=price-price.ma
-  st.mean.forecast = 0
-  return.forecast = st.mean.forecast-c(0,wmean(log(1+sp500),weights.av19))
-  price.ma.delta = c(0,price.ma[1:(length(price)-1)] * return.forecast[1:(length(price)-1)])
-  price.ma.forecast = c(0,price.ma[1:(length(price)-1)]) - price.ma.delta
-  gap.forecast.norm = (c(0,gap[1:(length(price)-1)])+price.ma.delta)/c(0.005,vol.est[1:(length(price)-1)])
-  sig.forecast = pnorm(gap.forecast.norm)
-  sig = as.double(gap>0)
-  
-  df1 = data.frame(price,price.ma,price.ma.forecast,sig,sig.forecast,
-                   time=0:(length(price)-1))
-  colnames(df1) = c("price","price.ma","forecast.ma","sig","sig.forecast","time")
-  
-  require(ggplot2)
-  require(reshape2)    
-  
-  df1.melt = melt(df1[1:100,],measure.vars=c("price","price.ma","sig","sig.forecast"))
-  
-  df1.melt$type = c("sig","price")[as.double(is.element(df1.melt$variable,as.factor(c("price","price.ma"))))+1]
-  
-  ggplot(df1.melt, aes(x = time, y = value)) +
-    geom_line(aes(color = variable)) +
-    facet_grid(type ~ ., scales = "free_y")
+price=c(0,cumsum(log(1+sp500)))
+weights.av19 = rep(0.05,19)
+weights.av20 = rep(0.05,20)
+price.ma=as.double(filter(price,weights.av20,sides=1))
+price.ma[1:length(weights.av20)]=cumsum(price[1:length(weights.av20)])/1:length(weights.av20)
+gap=price-price.ma
+st.mean.forecast = 0
+return.forecast = st.mean.forecast-c(0,wmean(log(1+sp500),weights.av19))
+price.ma.delta = c(0,price.ma[1:(length(price)-1)] * return.forecast[1:(length(price)-1)])
+price.ma.forecast = c(0,price.ma[1:(length(price)-1)]) - price.ma.delta
+gap.forecast.norm = (c(0,gap[1:(length(price)-1)])+price.ma.delta)/c(0.005,vol.est[1:(length(price)-1)])
+sig.forecast = pnorm(gap.forecast.norm)
+sig = as.double(gap>0)
+
+df = data.frame(rets=c(0,sp500),price,price.ma,price.ma.forecast,sig,sig.forecast,
+                 time=0:(length(price)-1))
+colnames(df) = c("rets","price","price.ma","forecast.ma","sig","sig.forecast","time")
+
+require(ggplot2)
+require(reshape2)    
+
+df.melt = melt(df[1:100,],measure.vars=c("price","price.ma","sig","sig.forecast"))
+
+df.melt$type = c("sig","price")[as.double(is.element(df.melt$variable,as.factor(c("price","price.ma"))))+1]
+
+ggplot(df.melt, aes(x = time, y = value)) +
+  geom_line(aes(color = variable)) +
+  facet_grid(type ~ ., scales = "free_y")
   #+end_src
 
 #+results:
@@ -3707,21 +3527,22 @@ The example can be easily extended out beyond a day.
 Return histograms for various signal probabilities is shown below:
 
 #+begin_src R :results graphics :file assets/sig.returns.png :exports both
-  require(bigvis)
-  tweak <- list(
-    theme(
-      legend.position = "bottom",
-      plot.margin = unit(c(0, 0.5, 0, 0.5), "lines"),
-      legend.key.width = unit(1, "inches"),
-      text = element_text(size = 18)
-    ),
-    labs(x = NULL, y = NULL, fill = NULL),
-    scale_fill_gradient(low="#e5e5e5", high = "#444548")
-  )
-  
-  ret.sum = condense(bin(df2$sig.forecast,0.02),bin(df2$rets,0.002))
-  rs = peel(ret.sum,.95)
-  autoplot(rs) + tweak
+require(bigvis)
+require(grid)
+tweak <- list(
+  theme(
+    legend.position = "bottom",
+    plot.margin = unit(c(0, 0.5, 0, 0.5), "lines"),
+    legend.key.width = unit(1, "inches"),
+    text = element_text(size = 18)
+  ),
+  labs(x = NULL, y = NULL, fill = NULL),
+  scale_fill_gradient(low="#e5e5e5", high = "#444548")
+)
+
+ret.sum = condense(bin(df$sig.forecast,0.02),bin(df$rets,0.002))
+rs = peel(ret.sum,.95)
+autoplot(rs) + tweak
 #+end_src
 
 #+results:
@@ -3740,10 +3561,10 @@ Return histograms for various signal probabilities is shown below:
       panel.margin = unit(0.25, "cm")
     )
   )
-  ret.sum = condense(bin(df2$sig.forecast,0.02),z=df2$rets, summary = "sd")
+  ret.sum = condense(bin(df$sig.forecast,0.02),z=df$rets, summary = "sd")
   
   d = data.frame(
-    ret = rep(ret.sum$df2.sig.forecast,3),
+    ret = rep(ret.sum$df.sig.forecast,3),
     summary = rep(c("count","mean","sd"), each = nrow(ret.sum)),
     value = c(ret.sum$.count, ret.sum$.mean*251, ret.sum$.sd*(251^.5))
   )
@@ -3767,7 +3588,7 @@ Return histograms for various signal probabilities is shown below:
   qplot(ret, value, data = d, geom = "line") +
     facet_grid(summary ~ ., scales = "free") +
     tweak +
-    geom_line(data = smooth, aes(x=df2.sig.forecast, y=value),colour="#000099") 
+    geom_line(data = smooth, aes(x=df.sig.forecast, y=value),colour="#000099") 
     
   
 #+end_src
@@ -4741,7 +4562,7 @@ Ways to perform forecasting
 ** NEXT disruptor
 SCHEDULED: <2013-04-20 Sat>
 :LOGBOOK:
-CLOCK: [2013-04-24 Wed 09:38]
+CLOCK: [2013-04-24 Wed 09:38]--[2013-04-25 Thu 09:03] => 23:25
 :END:
 
 The disruptor scheme is at the center of many peoples thinking about

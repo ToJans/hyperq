@@ -1,4 +1,4 @@
--- [[file:~/projects/hft/hft.org::*Hft.Iqtest%20development][Hft\.Iqtest\ development:1]]
+-- [[file:~/projects/hft/hft.org::*Iqtest%20development][Iqtest\ development:1]]
 
 import Control.Concurrent
 import Network
@@ -109,4 +109,4 @@ main = do
   conFileTime "localhost" "5009" file
   return(ExitSuccess)
 
--- Hft\.Iqtest\ development:1 ends here
+-- Iqtest\ development:1 ends here
