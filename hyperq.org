@@ -1,6 +1,6 @@
 #+Language: en
-#+TITLE: hft,
-#+DESCRIPTION: hft project
+#+TITLE: hyperq
+#+DESCRIPTION: hyperq project
 #+AUTHOR: Tony Day
 #+STARTUP: logdone
 #+OPTIONS: H:nil num:nil toc:nil \n:nil @:t ::t |:t ^:t f:t TeX:t tags:nil author:nil
@@ -11,8 +11,6 @@
 #+PROPERTY: session *R*
 #+PROPERTY: comments link
 #+PROPERTY: noarchive t
-
-HFT project pages
 
 * Introductions
 Various intro channels: repo README.md, about.html page and index.html
@@ -27,30 +25,35 @@ to be done manually - kludgy I know).
 :END:
 
 #+begin_src markdown
-  <img src="http://scarcecapital.com/assets/hft-blue.png" width="100px">
-
-  [Blog](http://scarcecapital.com/hft)
-
-  hft is a small project with a big ambition. We aim to build the worlds best
+  <img src="http://hyperq.github.io/assets/hyper-blue.png" width="100px">
+  
+  [Main Site](http://hyperq.github.io)
+  
+  hyperq is a small project with a big ambition. We aim to build the worlds best
   algorithmic trading platform using the best off-the-shelf open source
   technology stack to be found.
-
-  hft is created and maintained by [Tony Day](http://scarcecapital.com).
-
+  
   ## Quick start
-
-  There is no quick start for hft.  The easiest way to get up to speed is to read the project [blog](http://scarcecapital.com/hft).  If you're interested in contributing to development or find a logic bug, then fork me with:
-
+  
+  There is no quick start for hyperq yet (help us create one!). The easiest way to
+  get up to speed is to read the project [blog](http://hyperq.github.io/blog). If
+  you're interested in contributing to development or find a logic bug, then
+  fork me with:
+  
   ```
-  $ git clone https://github.com/tonyday567/hft.git
+  $ git clone https://github.com/hyperq/hyperq.git
   ```
-
+  
   ## News
-
+  
+  25 April, 2013
+  
+  Happy Birthday, hyperq!  Zero today!
+  
   23 April, 2013
-
+  
   A discussion group has been formed at [hft-discuss](https://groups.google.com/forum/?hl=en&fromgroups#!forum/hft-discuss)
-
+  
   Some near-term goals include:
   - moving the project to an organization basis (which will involve a name
     change (watch this space).
@@ -58,45 +61,44 @@ to be done manually - kludgy I know).
   - exploring automated deployment and build options
   - discussing the relative strengths and weaknesses of python versus R, as they
     apply to the hft problem domain.
-
+  
   ## Bug tracker
-
-  Have a bug or a feature request? [Please open a new issue](https://github.com/tonyday567/hft/issues). 
-
+  
+  Have a bug or a feature request? [Please open a new issue](https://github.com/hyperq/hyperq/issues). 
+  
   ## Community
-
+  
   Join the discussions at [hft-discuss](https://groups.google.com/forum/?hl=en&fromgroups#!forum/hft-discuss)
-
-  hft is sponsored by [Scarce Capital](http://scarcecapital.com) as an adjunct to client advisory services.
-
-  Follow [@scarcecapital on Twitter](http://twitter.com/scarcecapital).
-
-  Read, subscribe (and contribute!) to the [The hft Blog](http://scarcecapital.com/hft).
-
+  
+  Hyperq is sponsored by [Scarce Capital](http://scarcecapital.com). Follow
+  [@scarcecapital on Twitter](http://twitter.com/scarcecapital).
+  
+  Read, subscribe (and contribute!) to the [The hyperq Blog](http://hyperq.github.io).
+  
   ## Contributing
-
+  
   Please submit all pull requests against the master branch.
-
+  
   Thanks!
-
-  ## Authors
-
+  
+  ## Core Contributors
+  
   **Tony Day**
-
+  
   + [http://twitter.com/tonyday567](http://twitter.com/tonyday567)
   + [http://github.com/tonyday567](http://github.com/tonyday567)
-
-
+  
+  
   ## Copyright and license
-
-  Copyright 2013 Scarce Capital.
-
+  
+  Copyright 2013 hyperq.
+  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this work except in compliance with the License.
   You may obtain a copy of the License in the LICENSE file, or at:
-
+  
     [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
+  
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -105,7 +107,7 @@ to be done manually - kludgy I know).
 #+end_src
 
 
-** Welcome to HFT!
+** Welcome to hyperq!
 CLOSED: [2013-04-11 Thu 15:47]
 :PROPERTIES:
 :PAGE:     about.html
@@ -113,43 +115,35 @@ CLOSED: [2013-04-11 Thu 15:47]
 :END:
 
 
-[[http://scarcecapital.com/hft][Blog]]
+[[http://hyperq.github.io][Blog]]
 
-hft is a small project with a big ambition. We aim to build the worlds
+hyperq is a small project with a big ambition. We aim to build the worlds
 best algorithmic trading platform using the best off-the-shelf open
 source technology stack to be found.
 
-hft is created and maintained by [[http://scarcecapital.com][Tony Day]].
 
 *** Quick start
 
-There is no quick start for hft. The easiest way to get up to speed is
-to read the project [[http://scarcecapital.com/hft][blog]]. If you're
+There is no quick start for hyperq. The easiest way to get up to speed is
+to read the project [[http://hyperq.github.io][blog]]. If you're
 interested in contributing to development or find a logic bug, then fork
 me with:
 
 #+BEGIN_EXAMPLE
-    $ git clone https://github.com/tonyday567/hft.git
+    $ git clone https://github.com/hyperq/hyperq.git
 #+END_EXAMPLE
 
 *** Bug tracker
 
 Have a bug or a feature request?
-[[https://github.com/tonyday567/hft/issues][Please open a new issue]].
+[[https://github.com/hyperq/hyperq/issues][Please open a new issue]].
 
 *** Community
 
-hft is sponsored by [[http://scarcecapital.com][Scarce Capital]] as an
-adjunct to client advisory services.
-
-Follow [[http://twitter.com/scarcecapital][@scarcecapital on Twitter]].
+Hyperq is sponsored by [[http://scarcecapital.com][Scarce Capital]]. Follow [[http://twitter.com/scarcecapital][@scarcecapital on Twitter]].
 
 Read, subscribe (and contribute!) to the
-[[http://scarcecapital.com/hft][The Official hft Blog]].
-
-The project is partially due to active discussions on the
-[[http://www.linkedin.com/groups?home=&gid=4405119&trk=anet_ug_hm][Open
-Source HFT Linkedin group]]
+[[http://hyperq.github.io][the hyperq blog]].
 
 *** Contributing
 
@@ -157,7 +151,7 @@ Please submit all pull requests against the master branch.
 
 Thanks!
 
-*** Authors
+*** Core Contributors
 
 *Tony Day*
 
@@ -181,7 +175,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-** HFT
+** hyperq
 :PROPERTIES:
   :PAGE:     index.html
   :TEMPLATE: plain.html
@@ -191,19 +185,22 @@ limitations under the License.
   <div class="hero-unit">
     <div class="row-fluid">
       <div class="span6">
-	<h1>hft</h1>
+	<h1>hyperq</h1>
 	<br>
-	<p>
-	  (Semi-) High Frequency and (Semi-) Algorithmic trading, research and design
-	</p>
+	<p>High Profit Algorithms</p>
+    <p>High Performance Software</p>
+	<p>Quick and Quanty</p>
 	<p>
 	  using <a href="http://www.haskell.org/haskellwiki/Haskell">haskell</a>,<a href="http://www.r-project.org">R</a> and <a href="http://www.gnu.org/software/emacs/">emacs</a> <a href="http://orgmode.org">org-mode</a>.
 	</p>
 	<p>
-	  open-source and on a budget (hence the Semi)
+	  open-source and on a budget
 	</p>
 	<a class="btn btn-large hero-button" href="http://eepurl.com/xZDev">email feed &raquo;</a>
-	<br>
+    <br>
+        <a href="https://twitter.com/hyperq_" class="twitter-follow-button" data-show-count="false">Follow @hyperq_</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        <br>
       </div>
 
 
@@ -217,7 +214,7 @@ limitations under the License.
       </div>
       <div class="span12">
 
-	<p><code>$ git clone https://github.com/tonyday567/hft.git</code></p>
+	<p><code>$ git clone https://github.com/hyperq/hyperq.git</code></p>
       </div>
     </div>
   </div>
@@ -242,7 +239,7 @@ CLOSED: [2013-04-23 Tue 14:44]
   - installing a modern communication toolkit
   - exploring automated deployment and build options
   - discussing the relative strengths and weaknesses of python versus R, as they
-    apply to the hft problem domain.
+    apply to the problem domain.
 
 
 * TODO immediate tasks
@@ -255,10 +252,39 @@ CLOSED: [2013-04-23 Tue 14:44]
 - [ ] draft 0.2 milestones
 - [ ] connect IB
 
+
+** hyperq
+CLOSED: [2013-04-25 Thu 17:55]
+:PROPERTIES:
+:blog:     t
+:END:
+
+Our little project just got a little bit bigger today and is moving away from
+the personal repository to a shiny new open-source organization called hyperq.
+We're busy underneath hoods tinkering with link changes, repo structures and
+the usual stuff, and apologies in advance if service gets interupted.
+
+*** What does hyperq stand for?
+
+Lots of things.  The name was the end result of thinking of many, many cool
+names to do with HFT, machine learning, algorithms and trading, all of which
+turned out to be taken already on github.
+
+The project is all about achieving high profits (hy-p) by building high
+performance software (hy-per) for High-Frequency Trading (the hy, I suppose).
+And it's about putting the q back in quant when it comes to thinking about
+low-latency. It's going to be both (q)uick and smart.
+
+But to do all of that we need help (and a touch of patience). A tweet of
+encouragement is nice to get, a short critique of our repos even nicer.
+Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
+  
+
+
 * technology stack
 
 The world of high frequency trading is a broad church of opinion,
-technology, ideas and motivations. hft is currently being developed using many
+technology, ideas and motivations. hyperq is currently being developed using many
 different tools.
 
 *** [[http://www.gnu.org/software/emacs/][emacs]],
@@ -266,7 +292,7 @@ different tools.
 [[http://en.wikipedia.org/wiki/Literate_programming][literate
 programming]]
 
-[[https://github.com/tonyday567/hft/blob/master/hft.org][hft.org]] is
+[[https://github.com/hyperq/hyperq/blob/master/hyperq.org][hyperq.org]] is
 the nerve center of active development and contains just about all the
 important code, research notes and design tools being used.
 
@@ -280,7 +306,7 @@ between coding environments and languages, whilst still remaining
   beings rather than as a set of instructions to a computer. ~ Knuth
 #+END_QUOTE
 
-Similarly, a project such as hft is as much about communication between
+Similarly, a project such as hyperq is as much about communication between
 human beings as it is about maintenance of source code.
 
 *** [[http://www.r-project.org][R]]
@@ -300,10 +326,10 @@ frame the system as and when it develops.
 *** [[http://www.interactivebrokers.com/en/main.php][Interactive
 Brokers]]
 
-Eventually, hft will be broker independent but during the development
+Eventually, the hft schema will be broker independent but during the development
 phase IB is the test case. Interactive has the most mature API that
-works out of the box and a demo account so that hft can come pre-plumbed
-so that (eventually) the project can also run out of the box.
+works out of the box and a demo account so that hyperq can come pre-plumbed
+and (eventually) the project can also run out of the box.
 
 Interactive Brokers consolidates tick data into 0.3 second time slices
 so it isn't appropriate for low-latency work.
@@ -315,15 +341,15 @@ has been chosen as an initial data feed to base project R&D efforts on.
 iqfeed costs dollars but the software can be downloaded for free and a
 demo version allows live data to flow with a lag.
 
-A useful way to support the hft project is to let DTN know if you decide
-to purshase iqfeed due to the project.
+A useful way to support the hyperq is to let DTN know if you decide
+to purshase iqfeed.
 
 
 
 
 
 ** innovations
-The technology stack on which hft is being built is rapidly evolving.
+The technology stack on which hyperq is being built is rapidly evolving.
 *** zipline
 CLOSED: [2013-04-23 Tue 15:11]
 :LOGBOOK:
@@ -335,7 +361,7 @@ CLOSED: [2013-04-23 Tue 15:11]
 :END:
 
 Zipline is an open-source project that is a candidate for collaboration and
-other synergies with the HFT project.
+other synergies with hyperq.
 
 Zipline is the open-source backtesting engine (written in Python) underlying
 Quantopian, an online trading systems development IDE (again, Python-based)
@@ -409,10 +435,11 @@ method for the supplied dual moving average sample strategy and recorded the
 main features in a single file. This is useful to quickly refresh memory
 of the code flow rather than wading though multiple source files.
 
-https://gist.github.com/cnmgh/e72e0e08de2986c2180d
+https://gist.github.com/cmahon/e72e0e08de2986c2180d
 
 
-* hft project design
+
+* project design
 
 The solution space for a highish-frequency, automated, algorithmic trading
 system is wide. Most solutions out there are propietary, expensive and
@@ -453,7 +480,7 @@ solutions:
 
 ** project design choices
 
-There are several design features that drive the hft project and we hope offer
+There are several design features that drive hyperq and we hope offer
 a comparative advantage:
 
 - *HFT on a budget*: Development is focused on using the cheapest technologies
@@ -461,14 +488,14 @@ a comparative advantage:
 - *literate programming documentation*: markets are complex and so is large-scale project
   code. The heart of this project is experimentation with how to go about
   large-scale project formulation using a literate programming ethic.
-- *semi-HFT*: much HFT trading is about pure speed - being the first to react
-  to an obvious mis-pricing, front-running a lazy or half-hidden market order
-  are two obvious examples. We believe there is a gap in the market between
-  pure-speed HFT and human-intervention algo trading that the project is
-  seeking to exploit.
+- *fast AND smart*: much HFT trading is about pure speed - being the first to
+  react to an obvious mis-pricing, front-running a lazy or half-hidden market
+  order are two obvious examples. We believe there is a gap in the market that
+  can be exploited between pure-speed HFT and human-intervention algo trading
+  that the project is all about.
 - *meta-algo*: the entire system and process is an algorithm to be searched,
   optimised and refactored.
-- *open source*: the hft project is open source purely and simply, licenced
+- *open source*: hyperq is open source purely and simply, licenced
   under the generous Apache system.
 - *modern toolkit*: the project is oriented towards using higher-level
   languages and concepts for rapid, robust development. Together with a
@@ -501,7 +528,7 @@ CLOSED: [2013-04-11 Thu 16:46]
 :top:      t
 :END:
 
-hft is in an experimental phase and, as such, there is a need for flexibility
+hyperq is in an experimental phase and, as such, there is a need for flexibility
 in the top-down design of the system. To achieve this, the overall design is
 first being modelled using graphviz.  The current candidate system looks like this:
 
@@ -703,7 +730,7 @@ map (\x -> [x]) $ nodeList g
 
 * system specification
 
-hft is in an experimental phase and, as such, there is a need for flexibility
+hyperq is in an experimental phase and, as such, there is a need for flexibility
 in the top-down design of the system. To achieve this, the overall design is
 first being modelled using graphviz.  The current candidate system is:
 
@@ -940,7 +967,7 @@ CLOCK: [2013-03-23 Sat 17:00]--[2013-03-23 Sat 17:55] =>  0:55
 
 The Controller module is both a component of the overall system and is the complete system.
 
-To (eventually) compile and run the hft project, compile and run the following code:
+To (eventually) compile and run the project, compile and run the following code:
 
 ** Controller.hs
 :PROPERTIES:
@@ -1068,8 +1095,9 @@ map (\x -> [x]) $ nodeList g
 
 
 ** commandline
+
 #+begin_src sh :results output
-cd ~/projects/hft/haskell
+cd ~/projects/hyperq/haskell
 ghc --make Controller.hs
 ./Controller
 #+end_src
@@ -1365,13 +1393,13 @@ ghc --make Feed.hs threaded
     return(ExitSuccess)
 #+end_src
 
-*** Hft.Iqconnect
+*** Hyperq.Iqconnect
 :PROPERTIES:
-:tangle:   haskell/Hft/Iqconnect.hs
+:tangle:   haskell/Hyperq/Iqconnect.hs
 :END:
 
-#+begin_src haskell :tangle haskell/Hft/Iqconnect.hs
-module Hft.Iqconnect where 
+#+begin_src haskell :tangle haskell/Hyperq/Iqconnect.hs
+module Hyperq.Iqconnect where 
 
 import Control.Concurrent
 import Network
@@ -1457,7 +1485,7 @@ getCurrentTimeString = do
 import Control.Concurrent
 import System.Environment
 import System.Exit
-import Hft.Iqconnect
+import Hyperq.Iqconnect
 
 main :: IO ExitCode
 main = do
@@ -2088,7 +2116,7 @@ Iqfeed sends a ping once a second as part of the stream.
 *** event latency
 
 The ticks for the day were processed into column-data formats using the mmap
-package from R (see hft.org for the gory details).
+package from R (see hyperq.org for the gory details).
 
 From the R database of the one day quote ticks...
 
@@ -2819,8 +2847,9 @@ There's a few hypotheses guilding the evolution of the algorithm design:
   forecast of relative value between two securities.  With HFT, it becomes
   problematic when there is an implicit assumption that two trades can occur
   simultaneously and with certainty.
-- that a comparative advantage of the HFT project is in algorithm design
-  rather than raw speed.
+- that a comparative advantage of the project is in algorithm design
+  in addition to raw speed.
+
 ** Statistical Forecasting                                               :R:
 CLOSED: [2013-04-17 Wed 16:23]
 :LOGBOOK:
@@ -4692,8 +4721,8 @@ http://community.haskell.org/~simonmar/par-tutorial.pdf
 #+STYLE_DIR: ../style
 #+ASSETS_DIR: assets
 #+TEMPLATE_DIR: ~/stuff/site/templates
-#+PUBLISH_DIR: gh-pages
-#+URL: http://scarcecapital.com/hft
+#+PUBLISH_DIR: ~/git/hyperq.github.io
+#+URL: http://hyperq.github.io
 #+DEFAULT_CATEGORY: blog
 #+ANALYTICS: UA-22236293-1
 #+DISQUS: scarce
@@ -4706,9 +4735,9 @@ http://community.haskell.org/~simonmar/par-tutorial.pdf
 Anyone who would like to publish bits and bobs is welcome to do so, and
 everyone is encouraged to as well.
 
-The project site ([[http:scarcecapital.com.hft][scarcecapital.com/hft]]) is
-- a static site located in the gh-pages branch of the repo
-- published using the material in hft.org (this file)
+The project site ([[http:hyperq.github.io][hyperq.github.io]]) is
+- a static site located in https://github.com/hyperq/hyperq.github.io
+- published using the material in hyperq.org (this file)
 - published using [[https://github.com/renard/o-blog][o-blog]]
 
 So to publish a blog, you just:
@@ -4729,13 +4758,13 @@ some style/css files and html templates).
 *** local variables
 - [ ] move to a properties basis to avoid forgetting to run this
 #+begin_src emacs-lisp
-      (setq o-blog-local-site "~/Sites/hft")
-      (setq o-blog-out-dir "gh-pages")
-      (setq o-blog-local-url-index "http://127.0.0.1/~tonyday/hft/index.html")
+      (setq o-blog-local-site "~/Sites/hyperq")
+      (setq o-blog-out-dir "~/git/hyperq.github.io")
+      (setq o-blog-local-url-index "http://127.0.0.1/~tonyday/hyper/index.html")
 #+end_src
 
 #+results:
-: http://127.0.0.1/~tonyday/hft/index.html
+: http://127.0.0.1/~tonyday/hyper/index.html
 
 *** o-blog debugging
 :PROPERTIES:
@@ -4838,7 +4867,7 @@ snippets used in page constrcution.
   </ul>
 
   </li>
-  <li><a href="https://github.com/tonyday567/hft"><i>icon-github icon-white</i> HFT</a>
+  <li><a href="https://github.com/hyperq/hyperq"><i>icon-github icon-white</i>repo</a>
 
   </li>
   <li><a href="{lisp}(ob:path-to-root){/lisp}/tags.html"><i>icon-tags icon-white</i> Tags</a>
@@ -4862,7 +4891,7 @@ snippets used in page constrcution.
   :END:
 
 #+begin_html
-Copyright <a href="http://scarcecapital.com">Scarce Capital</a> 2010-2013
+Copyright <a href="http://github.com/hyperq">hyperq</a> 2013-2013
 
 <p>Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this work except in compliance with the License.

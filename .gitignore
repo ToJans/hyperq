@@ -22,3 +22,4 @@
 *flymake.hs
 dist
 cabal-dev
+out
