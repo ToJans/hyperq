@@ -1,4 +1,4 @@
--- [[file:~/projects/hft/hft.org::*Iqtest%20development][Iqtest\ development:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*Iqtest%20development][Iqtest\ development:1]]
 
 import Control.Concurrent
 import Network

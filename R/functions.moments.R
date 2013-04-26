@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*startup][startup:1]]
+## [[file:~/projects/hyperq/hyperq.org::*startup][startup:1]]
 
 momentum.startup = function() {
   rm(list = ls())
@@ -15,7 +15,7 @@ momentum.startup = function() {
 
 ## startup:1 ends here
 
-## [[file:~/projects/hft/hft.org::*return.to.stats.raw][return\.to\.stats\.raw:1]]
+## [[file:~/projects/hyperq/hyperq.org::*return.to.stats.raw][return\.to\.stats\.raw:1]]
 
 return.to.stats.raw = function(r) {
   r=na.omit(r)
@@ -35,7 +35,7 @@ return.to.stats.raw = function(r) {
 
 ## return\.to\.stats\.raw:1 ends here
 
-## [[file:~/projects/hft/hft.org::*return.to.stats][return\.to\.stats:1]]
+## [[file:~/projects/hyperq/hyperq.org::*return.to.stats][return\.to\.stats:1]]
 
 return.to.stats = function(xts.r) {
   r=na.omit(xts.r)
@@ -58,7 +58,7 @@ return.to.stats = function(xts.r) {
 
 ## return\.to\.stats:1 ends here
 
-## [[file:~/projects/hft/hft.org::*weighted.historicals][weighted\.historicals:1]]
+## [[file:~/projects/hyperq/hyperq.org::*weighted.historicals][weighted\.historicals:1]]
 
 weighted.historicals = function(rets, hist.weights) {
   hmean=as.double(filter(rets,hist.weights$mean,sides=1))
@@ -71,7 +71,7 @@ weighted.historicals = function(rets, hist.weights) {
 
 ## weighted\.historicals:1 ends here
 
-## [[file:~/projects/hft/hft.org::*quantile.ts][quantile\.ts:1]]
+## [[file:~/projects/hyperq/hyperq.org::*quantile.ts][quantile\.ts:1]]
 
 quantile.ts = function(ts,q) {
   n=length(ts)
@@ -82,7 +82,7 @@ quantile.ts = function(ts,q) {
 
 ## quantile\.ts:1 ends here
 
-## [[file:~/projects/hft/hft.org::*bucket.stats.posandr][bucket\.stats\.posandr:1]]
+## [[file:~/projects/hyperq/hyperq.org::*bucket.stats.posandr][bucket\.stats\.posandr:1]]
 
 bucket.stats.posandr = function(pos, r, qts1, qts2, num.quantiles, delay.signal) {
   br=matrix(0,num.quantiles,num.quantiles);bcount=br;bpos=br;c=br;babsr=br;bsqr=br;bstd=br;
@@ -111,7 +111,7 @@ bucket.stats.posandr = function(pos, r, qts1, qts2, num.quantiles, delay.signal)
 
 ## bucket\.stats\.posandr:1 ends here
 
-## [[file:~/projects/hft/hft.org::*bucket.stats][bucket\.stats:1]]
+## [[file:~/projects/hyperq/hyperq.org::*bucket.stats][bucket\.stats:1]]
 
 bucket.stats = function(r, qts1, qts2, num.quantiles, delay.signal) {
   br=matrix(0,num.quantiles,num.quantiles);bcount=br;c=br;babsr=br;bsqr=br;bstd=br;
@@ -138,7 +138,7 @@ bucket.stats = function(r, qts1, qts2, num.quantiles, delay.signal) {
 
 ## bucket\.stats:1 ends here
 
-## [[file:~/projects/hft/hft.org::*print.qstat][print\.qstat:1]]
+## [[file:~/projects/hyperq/hyperq.org::*print.qstat][print\.qstat:1]]
 
 print.qstat = function(stat,count) {
   row.count = apply(count,1,sum)
@@ -154,7 +154,7 @@ print.qstat = function(stat,count) {
 
 ## print\.qstat:1 ends here
 
-## [[file:~/projects/hft/hft.org::*print.qstat.count][print\.qstat\.count:1]]
+## [[file:~/projects/hyperq/hyperq.org::*print.qstat.count][print\.qstat\.count:1]]
 
 print.qstat.count = function(count) {
   row.stat = apply(count,1,sum)

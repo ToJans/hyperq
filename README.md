@@ -1,28 +1,29 @@
-<!-- [[file:~/projects/hft/hft.org::*README.md][README\.md:1]] -->
+<!-- [[file:~/projects/hyperq/hyperq.org::*README.md][README\.md:1]] -->
 
-<img src="http://scarcecapital.com/assets/hft-blue.png" width="100px">
+<img src="http://hyperq.github.io/assets/hyper-blue.png" width="100px">
 
-[Blog](http://scarcecapital.com/hft)
+[Main Site](http://hyperq.github.io)
 
-hft is a small project with a big ambition. We aim to build the worlds best
+hyperq is a small project with a big ambition. We aim to build the worlds best
 algorithmic trading platform using the best off-the-shelf open source
 technology stack to be found.
 
-hft is created and maintained by [Tony Day](http://scarcecapital.com).
-
 ## Quick start
 
-There is no quick start for hft.  The easiest way to get up to speed is to read the project [blog](http://scarcecapital.com/hft).  If you're interested in contributing to development or find a logic bug, then fork me with:
+There is no quick start for hyperq yet (help us create one!). The easiest way to
+get up to speed is to read the project [blog](http://hyperq.github.io/blog). If
+you're interested in contributing to development or find a logic bug, then
+fork me with:
 
 ```
-$ git clone https://github.com/tonyday567/hft.git
+$ git clone https://github.com/hyperq/hyperq.git
 ```
 
 ## News
 
-24 April, 2013
+25 April, 2013
 
-travis hook going in for a simple build
+Happy Birthday, hyperq!  Zero today!
 
 23 April, 2013
 
@@ -38,17 +39,16 @@ Some near-term goals include:
 
 ## Bug tracker
 
-Have a bug or a feature request? [Please open a new issue](https://github.com/tonyday567/hft/issues). 
+Have a bug or a feature request? [Please open a new issue](https://github.com/hyperq/hyperq/issues). 
 
 ## Community
 
 Join the discussions at [hft-discuss](https://groups.google.com/forum/?hl=en&fromgroups#!forum/hft-discuss)
 
-hft is sponsored by [Scarce Capital](http://scarcecapital.com) as an adjunct to client advisory services.
+Hyperq is sponsored by [Scarce Capital](http://scarcecapital.com). Follow
+[@scarcecapital on Twitter](http://twitter.com/scarcecapital).
 
-Follow [@scarcecapital on Twitter](http://twitter.com/scarcecapital).
-
-Read, subscribe (and contribute!) to the [The hft Blog](http://scarcecapital.com/hft).
+Read, subscribe (and contribute!) to the [The hyperq Blog](http://hyperq.github.io).
 
 ## Contributing
 
@@ -56,7 +56,7 @@ Please submit all pull requests against the master branch.
 
 Thanks!
 
-## Authors
+## Core Contributors
 
 **Tony Day**
 
@@ -66,7 +66,7 @@ Thanks!
 
 ## Copyright and license
 
-Copyright 2013 Scarce Capital.
+Copyright 2013 hyperq.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this work except in compliance with the License.

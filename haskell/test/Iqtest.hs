@@ -1,9 +1,9 @@
--- [[file:~/projects/hft/hft.org::*Iqtest][Iqtest:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*Iqtest][Iqtest:1]]
 
 import Control.Concurrent
 import System.Environment
 import System.Exit
-import Hft.Iqconnect
+import Hyperq.Iqconnect
 
 main :: IO ExitCode
 main = do

@@ -1,7 +1,7 @@
 name:              hft
 version:           0.1
-synopsis:          hft project testbed
-homepage:          https://scarcecapital.com/hft
+synopsis:          hyperq project testbed
+homepage:          https://hyperq.github.io
 license:           OtherLicense
 license-file:      LICENSE
 author:            Tony Day
@@ -15,10 +15,10 @@ extra-source-files: Readme.md
 
 source-repository head
   type:     git
-  location: git://github.com/tonyday567/hft.git
+  location: git://github.com/hyperq/hyperq.git
 
 library
-  exposed-modules:  Hft.Iqconnect
+  exposed-modules:  Hyperq.Iqconnect
   build-depends:    base
                   , process
                   , network

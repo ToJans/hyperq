@@ -1,6 +1,6 @@
--- [[file:~/projects/hft/hft.org::*Hft.Iqconnect][Hft\.Iqconnect:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*Hyperq.Iqconnect][Hyperq\.Iqconnect:1]]
 
-module Hft.Iqconnect where 
+module Hyperq.Iqconnect where 
 
 import Control.Concurrent
 import Network
@@ -79,4 +79,4 @@ getCurrentTimeString = do
    let offset = diffUTCTime  (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)) (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime (4 * 60 * 60)))
    return (formatTime defaultTimeLocale "%H:%M:%S%Q" $ addUTCTime offset now)
 
--- Hft\.Iqconnect:1 ends here
+-- Hyperq\.Iqconnect:1 ends here

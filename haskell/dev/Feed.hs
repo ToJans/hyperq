@@ -1,4 +1,4 @@
--- [[file:~/projects/hft/hft.org::*Feed][Feed:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*Feed][Feed:1]]
 
 import Control.Concurrent
 import Network

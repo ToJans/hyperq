@@ -1,4 +1,4 @@
--- [[file:~/projects/hft/hft.org::*threading%20example][threading\ example:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*threading%20example][threading\ example:1]]
 
 import Control.Monad
 import Control.Concurrent

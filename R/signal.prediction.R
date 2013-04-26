@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*sp500%20data][sp500\ data:1]]
+## [[file:~/projects/hyperq/hyperq.org::*sp500%20data][sp500\ data:1]]
 
 rm(list = ls())
 require(xts)
@@ -13,7 +13,7 @@ colnames(sp500)="sp500"
 
 ## sp500\ data:1 ends here
 
-## [[file:~/projects/hft/hft.org::*wmom][wmom:1]]
+## [[file:~/projects/hyperq/hyperq.org::*wmom][wmom:1]]
 
 wmom = function(rets, weights) {
   mean=as.double(filter(rets,weights$mean,sides=1))
@@ -26,7 +26,7 @@ wmom = function(rets, weights) {
 
 ## wmom:1 ends here
 
-## [[file:~/projects/hft/hft.org::*moments%20regression][moments\ regression:1]]
+## [[file:~/projects/hyperq/hyperq.org::*moments%20regression][moments\ regression:1]]
 
 l=251
 weights=data.frame(mean=rep(1/l,l),vol=rep(1/l,l))
@@ -41,7 +41,7 @@ summary(fit.vol)
 
 ## moments\ regression:1 ends here
 
-## [[file:~/projects/hft/hft.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
+## [[file:~/projects/hyperq/hyperq.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
 
 wmean = function(rets, weights) {
   wm=as.double(filter(rets,weights,sides=1))
@@ -51,7 +51,7 @@ wmean = function(rets, weights) {
 
 ## ma\(20\)\ price\ performance:1 ends here
 
-## [[file:~/projects/hft/hft.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
+## [[file:~/projects/hyperq/hyperq.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
 
 sharpe = function(rets) {
   m=sum(log(1+rets))/length(rets)*251
@@ -61,7 +61,7 @@ sharpe = function(rets) {
 
 ## ma\(20\)\ price\ performance:1 ends here
 
-## [[file:~/projects/hft/hft.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
+## [[file:~/projects/hyperq/hyperq.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
 
 weights.ma20=seq(0.95,0.05,-0.05)
 m=wmean(sp500,weights.ma20)
@@ -73,7 +73,7 @@ c(sharpe.long,sharpe.ma20)
 
 ## ma\(20\)\ price\ performance:1 ends here
 
-## [[file:~/projects/hft/hft.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
+## [[file:~/projects/hyperq/hyperq.org::*ma(20)%20price%20performance][ma\(20\)\ price\ performance:1]]
 
 png(filename="assets/ma20.delay.png")
 weights.ma20=seq(0.95,0.05,-0.05)
@@ -97,7 +97,7 @@ dev.off()
 
 ## ma\(20\)\ price\ performance:1 ends here
 
-## [[file:~/projects/hft/hft.org::*turnover%20adjustment][turnover\ adjustment:1]]
+## [[file:~/projects/hyperq/hyperq.org::*turnover%20adjustment][turnover\ adjustment:1]]
 
 sharpe.costs = function(rets,turnover,cost) {
   m=sum(log(1+rets))/length(rets)*251-turnover*cost
@@ -107,7 +107,7 @@ sharpe.costs = function(rets,turnover,cost) {
 
 ## turnover\ adjustment:1 ends here
 
-## [[file:~/projects/hft/hft.org::*turnover%20adjustment][turnover\ adjustment:1]]
+## [[file:~/projects/hyperq/hyperq.org::*turnover%20adjustment][turnover\ adjustment:1]]
 
 turnover = sum(abs(diff(sig)))/length(sig)*251
 x1=1
@@ -115,7 +115,7 @@ scost = sharpe.costs(sp500[(x1+1):length(sp500)]*sig[1:(length(sp500)-x1)],turno
 
 ## turnover\ adjustment:1 ends here
 
-## [[file:~/projects/hft/hft.org::*auto-conditionality%20estimates][auto-conditionality\ estimates:1]]
+## [[file:~/projects/hyperq/hyperq.org::*auto-conditionality%20estimates][auto-conditionality\ estimates:1]]
 
 l=251
 weights=data.frame(mean=rep(1/l,l),vol=rep(1/l,l))
@@ -130,14 +130,14 @@ summary(fit.vol)
 
 ## auto-conditionality\ estimates:1 ends here
 
-## [[file:~/projects/hft/hft.org::*auto-conditionality%20estimates][auto-conditionality\ estimates:1]]
+## [[file:~/projects/hyperq/hyperq.org::*auto-conditionality%20estimates][auto-conditionality\ estimates:1]]
 
 mean.est = 0.0003 + 0.12 * data$hmean + 0.011 * data$hvol
 vol.est = pmax(0.005^2 + -0.075 * data$hmean + 0.027 * data$hvol)^0.5
 
 ## auto-conditionality\ estimates:1 ends here
 
-## [[file:~/projects/hft/hft.org::*model][model:1]]
+## [[file:~/projects/hyperq/hyperq.org::*model][model:1]]
 
 png(filename="assets/sig.example.png")
 price=c(0,cumsum(log(1+sp500)))
@@ -172,7 +172,7 @@ dev.off()
 
 ## model:1 ends here
 
-## [[file:~/projects/hft/hft.org::*signal%20forecast%20and%20returns][signal\ forecast\ and\ returns:1]]
+## [[file:~/projects/hyperq/hyperq.org::*signal%20forecast%20and%20returns][signal\ forecast\ and\ returns:1]]
 
 png(filename="assets/sig.returns.png")
 require(bigvis)
@@ -195,7 +195,7 @@ dev.off()
 
 ## signal\ forecast\ and\ returns:1 ends here
 
-## [[file:~/projects/hft/hft.org::*mean%20and%20volatility%20variations][mean\ and\ volatility\ variations:1]]
+## [[file:~/projects/hyperq/hyperq.org::*mean%20and%20volatility%20variations][mean\ and\ volatility\ variations:1]]
 
 png(filename="assets/sig.analysis.png")
 require(bigvis)

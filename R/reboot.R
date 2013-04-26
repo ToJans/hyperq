@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*reboot][reboot:1]]
+## [[file:~/projects/hyperq/hyperq.org::*reboot][reboot:1]]
 
 rm(list = ls())
 require("mmap")

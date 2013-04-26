@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*libraries][libraries:1]]
+## [[file:~/projects/hyperq/hyperq.org::*libraries][libraries:1]]
 
 rm(list = ls())
 require("mmap")
@@ -8,7 +8,7 @@ require(stringr)
 
 ## libraries:1 ends here
 
-## [[file:~/projects/hft/hft.org::*variables][variables:1]]
+## [[file:~/projects/hyperq/hyperq.org::*variables][variables:1]]
 
 # stream with field header
 raw.stream = "streamqh"
@@ -25,7 +25,7 @@ id.size = 12
 
 ## variables:1 ends here
 
-## [[file:~/projects/hft/hft.org::*slurp%20in%20raw%20data%20(mmap)][slurp\ in\ raw\ data\ \(mmap\):1]]
+## [[file:~/projects/hyperq/hyperq.org::*slurp%20in%20raw%20data%20(mmap)][slurp\ in\ raw\ data\ \(mmap\):1]]
 
 my.mmap.csv = function(file,
   file.mmap = NA,
@@ -80,7 +80,7 @@ my.mmap.csv = function(file,
 
 ## slurp\ in\ raw\ data\ \(mmap\):1 ends here
 
-## [[file:~/projects/hft/hft.org::*slurp%20in%20raw%20data%20(mmap)][slurp\ in\ raw\ data\ \(mmap\):1]]
+## [[file:~/projects/hyperq/hyperq.org::*slurp%20in%20raw%20data%20(mmap)][slurp\ in\ raw\ data\ \(mmap\):1]]
 
 dir.create(db.path)
 
@@ -95,7 +95,7 @@ ticker.length =  nbytes(st$Symbol) - 1
 
 ## slurp\ in\ raw\ data\ \(mmap\):1 ends here
 
-## [[file:~/projects/hft/hft.org::*create%20mmaps%20for%20each%20column][create\ mmaps\ for\ each\ column:1]]
+## [[file:~/projects/hyperq/hyperq.org::*create%20mmaps%20for%20each%20column][create\ mmaps\ for\ each\ column:1]]
 
 stream = NULL
 stream$stamp = as.mmap(as.double(strptime(m[]$Stamp, "%H:%M:%OS",tz="GMT")),file=paste(db.path,"stamp.data",sep=""), mode=double())
@@ -119,7 +119,7 @@ stream$id = as.mmap(m[]$TickID,file=paste(db.path,"id.data",sep=""), mode=intege
 
 ## create\ mmaps\ for\ each\ column:1 ends here
 
-## [[file:~/projects/hft/hft.org::*create%20indices%20using%20rindex][create\ indices\ using\ rindex:1]]
+## [[file:~/projects/hyperq/hyperq.org::*create%20indices%20using%20rindex][create\ indices\ using\ rindex:1]]
 
 require(rindex)
 ind.stamp = index(as.character(stream$stamp[]))
@@ -129,7 +129,7 @@ ind.id = index(str_pad(as.character(stream$id[]), id.size, side = "left", pad = 
 
 ## create\ indices\ using\ rindex:1 ends here
 
-## [[file:~/projects/hft/hft.org::*save%20indexes][save\ indexes:1]]
+## [[file:~/projects/hyperq/hyperq.org::*save%20indexes][save\ indexes:1]]
 
 fields = names(stream)
 save(list = c("ind.stamp",

@@ -1,4 +1,4 @@
--- [[file:~/projects/hft/hft.org::*Controller.hs][Controller\.hs:1]]
+-- [[file:~/projects/hyperq/hyperq.org::*Controller.hs][Controller\.hs:1]]
 
 -- Example
 --

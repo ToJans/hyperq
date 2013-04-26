@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*weighting%20function][weighting\ function:1]]
+## [[file:~/projects/hyperq/hyperq.org::*weighting%20function][weighting\ function:1]]
 
 weighted.curve = function(maxn,slope,weight,delay) {
   c = rep(0,maxn)

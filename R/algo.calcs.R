@@ -1,4 +1,4 @@
-## [[file:~/projects/hft/hft.org::*moment%20calcs][moment\ calcs:1]]
+## [[file:~/projects/hyperq/hyperq.org::*moment%20calcs][moment\ calcs:1]]
 
 require(moments)
 source("R/functions.moments.R")
@@ -24,7 +24,7 @@ str(dfg)
 
 ## moment\ calcs:1 ends here
 
-## [[file:~/projects/hft/hft.org::*signal%20calc][signal\ calc:1]]
+## [[file:~/projects/hyperq/hyperq.org::*signal%20calc][signal\ calc:1]]
 
 delay.signal=1
 sig=c(as.logical(rep(0,delay.signal)),
@@ -36,7 +36,7 @@ summary(dfg$pos)
 
 ## signal\ calc:1 ends here
 
-## [[file:~/projects/hft/hft.org::*stats][stats:1]]
+## [[file:~/projects/hyperq/hyperq.org::*stats][stats:1]]
 
 dfn = subset(dfg, select = -c(times) )  
 stats = return.to.stats.raw(dfn)
@@ -45,7 +45,7 @@ stats
 
 ## stats:1 ends here
 
-## [[file:~/projects/hft/hft.org::*bucket%20stats][bucket\ stats:1]]
+## [[file:~/projects/hyperq/hyperq.org::*bucket%20stats][bucket\ stats:1]]
 
 b = bucket.stats(
   dfg$ret,
@@ -56,7 +56,7 @@ b = bucket.stats(
 
 ## bucket\ stats:1 ends here
 
-## [[file:~/projects/hft/hft.org::*std%20chart][std\ chart:1]]
+## [[file:~/projects/hyperq/hyperq.org::*std%20chart][std\ chart:1]]
 
 require(reshape)
 require(scales)
