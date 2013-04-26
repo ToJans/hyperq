@@ -30,7 +30,7 @@ library
   hs-source-dirs:   haskell
 
 executable iqtest
-  main-is:          IqTest.hs
+  main-is:          Iqtest.hs
   build-depends:    base
                   , process
                   , network
