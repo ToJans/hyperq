@@ -242,17 +242,6 @@ CLOSED: [2013-04-23 Tue 14:44]
     apply to the problem domain.
 
 
-* TODO immediate tasks
-- [X] integrate posts and main body
-- [X] get o-blog properties in to o-blog section 
-- [X] integrate README.md and about.html
-- [ ] start writing controller
-    - [ ] feed control
-- [ ] disruptor research
-- [ ] draft 0.2 milestones
-- [ ] connect IB
-
-
 ** hyperq
 CLOSED: [2013-04-25 Thu 17:55]
 :PROPERTIES:
@@ -280,6 +269,20 @@ encouragement is nice to get, a short critique of our repos even nicer.
 Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
   
 
+
+* immediate tasks
+- [X] integrate posts and main body
+- [X] get o-blog properties in to o-blog section 
+- [X] integrate README.md and about.html
+- [ ] start writing controller
+    - [ ] feed control
+- [ ] draft 0.2 milestones
+- [ ] connect IB
+
+** incoming
+*** opencl
+
+http://www.arcadianvisions.com/blog/?p=346
 
 * technology stack
 
@@ -1281,8 +1284,7 @@ fixme:heap:HeapSetInformation 0x0 1 0x0 0
 R sucks at asynchronous programming.
 
 
-** TODO haskell interfacing
-SCHEDULED: <2013-04-21 Sun>
+** haskell interfacing
 
 *** Feed
 :PROPERTIES:
@@ -1498,14 +1500,19 @@ main = do
 #+end_src
 
 
-*** Iqtest development
-SCHEDULED: <2013-05-04 Sat>
+*** NEXT Iqtest development
+SCHEDULED: <2013-05-19 Sun>
 :LOGBOOK:
 CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
 :END:
 :PROPERTIES:
 :tangle:   haskell/dev/Iqtest.hs
 :END:
+
+- [ ] set up testing harness
+    - [ ] dot of schema
+    - [ ] travis ready
+
 
 
 - things that need to be (step 1)
@@ -1530,7 +1537,7 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
   - portWriter
   - portReader (portListener)
   - portLogger (is this a specialisation of portReader)
-
+    
 - state information
   - is iqconnect up and are we logged on?
     - interrogation of system threads?
@@ -2265,6 +2272,68 @@ Hacking around with the April 23 data
 - [ ] level 2 ticks
 - [ ] timestamp for first twitter post
 
+
+
+** Event Feed Design
+CLOSED: [2013-04-30 Tue 10:48]
+:LOGBOOK:
+- State "DONE"       from ""           [2013-04-30 Tue 10:48]
+:END:
+:PROPERTIES:
+:blog:     t
+:top:      t
+:END:
+
+The hyperq_team is currently looking at development priorities and, whilst
+the votes aren't all in, designing and building the event feed is a hot
+favorite.  At the moment, the component is labeled as a market data stream but I'd like
+to broaden the definition.  
+
+Concentrating solely on market trades, bids and asks for an individual
+security in an effort to fully understand what's happening with price is a
+dangerous activity. We think there's a lot to be gained by /always/ accounting
+for broad market conditions /before/ you start to do statistical analytics on
+a particular security. Before you decide that =goog= is <insert forecast
+metaphor here>, you should check first as to whether the overall =market= is
+<insert forecast here> as well. If you look really, really closely, you
+might find that the =market= starts trending /before/ =goog= does, and you
+have yourself an immediate edge.
+
+This statistical arbitrage analogy can be extended beyond market data into
+market news flow. As a human, if I see a news item on Google, the very first next
+thing I do is look at recent Google price movements. If this could be automated (and it
+can) a news flow can trigger a recent order history lookup, a calculation of
+'price spikiness', a switch to including the security in the event stream.
+With 1000 news flow items a day we're going to find a handful of fat pitch
+opportunities.
+
+Even more broadly, social media news flow is evolving rapidly and could be a
+great source of automated idea generation.  A recent example, and fellow
+startup is http://www.ftsee.com/.  Machine-readable news flow, json-based API,
+easy ticker lookups - it's going to be a joy hooking this up after the pain
+involved with old and creaking market data feed APIs.
+
+So I wonder what we'll find when we crunch the correlations between intra-day
+returns and intra-day ftsee sentiment?  If we do find something I'm not sure we'll
+be telling unless you're a contributor ;)
+
+The concept of an event stream can also be extended towards events that happen
+inside the hyperq internals. If the internet goes down or (more likely) my son
+hacks into the dedicated line to steam the latest 30gig TF2 upgrade, then
+that's an event much more important than any external data streaming in (or
+not streaming in). Stop calculating the finer nuances of market stochastics,
+please, and start prepping for panic trading on link resumption.  Another
+example is the risk management component - knowing that near-term P&L is
+dependent on a few key positions should mean that event processing needs to
+be prioritized for these securities.  And the best and fastest way to get at
+event processors may well be a message sent via the event stream.
+
+So we're thinking about an event stream very broadly and including concepts
+other than market data and even external data. I think we can think this way
+because of our commitment to a modern multi-toolkit over the pure speed java
+approach. You can do things in haskell that can't be imagined in imperative
+languages, and you can create things with a multi-tool structure that can't
+be created in any single language.
 
 
 * R database
@@ -3138,8 +3207,9 @@ of the proposed system design.
 
 
 
-** Signal Prediction                                                     :R:
-CLOSED: [2013-04-22 Mon 17:12] 
+** TODO Signal Prediction                                                :R:
+SCHEDULED: <2013-05-23 Thu>
+[2013-04-22 Mon 17:12] 
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2013-04-22 Mon 17:12]
 :END:
@@ -3148,6 +3218,31 @@ CLOSED: [2013-04-22 Mon 17:12]
 :blog:     t
 :top:      t
 :END:
+
+*** fixup
+
+- [ ] wmom
+- [ ] log twice
+- [ ] fix formulae
+
+P[ sig(-1) > 0 ]
+= P[ sig(0) + delta_sig(-1) > 0 ]
+= P[ sig(0) + p(0)( .95.r(-1) - .05.Sum_0..18(r(i)) ) > 0 ]   // from your formula for delta_sig/p(0)
+= P[ r(-1) > ( -sig(0) + .05.p(0).Sum_0..18(r(i)) ) / .95.p(0) ]
+= P[ r(-1)/vol.est(0) > ( -sig(0) + .05.p(0).Sum_0..18(r(i)) ) / .95.p(0).vol.est(0) ] // converting to standard normal where mean of log return = 0 
+= 1 - N[ ( - sig(0) + .05.p(0).Sum_0..18(r(i)) ) / .95.p(0).vol.est(0) ]
+= N[ ( sig(0) - .05.p(0).Sum_0..18(r(i)) ) / .95.p(0).vol.est(0) ] // multiplying by -1
+
+I think you have:
+
+N[ ( sig(0) - .05.p_ma20(0).Sum_0..18(r(i)) ) / vol.est(0) ]
+
+based on:
+return.forecast = st.mean.forecast-c(0,wmean(log(1+sp500),weights.av19))
+price.ma.delta = c(0,price.ma[1:(length(price)-1)] * return.forecast[1:(length(price)-1)])
+gap.forecast.norm = (c(0,gap[1:(length(price)-1)])+price.ma.delta)/c(0.005,vol.est[1:(length(price)-1)])
+
+
 
 #+begin_html
 <script type="text/javascript"
@@ -3645,10 +3740,6 @@ Clearly the price ma(20) signal is above all a proxy for volatility:
 
 [fn:1] refactored name.  Previous post referred to weighted.historical
 
-
-
-** NEXT speed testing
-SCHEDULED: <2013-04-20 Sat>
 
 
 ** algo soup
@@ -4588,11 +4679,7 @@ Ways to perform forecasting
 
 
 * event stream engineering
-** NEXT disruptor
-SCHEDULED: <2013-04-20 Sat>
-:LOGBOOK:
-CLOCK: [2013-04-24 Wed 09:38]--[2013-04-25 Thu 09:03] => 23:25
-:END:
+** disruptor
 
 The disruptor scheme is at the center of many peoples thinking about
 low-latency and process design for HFT, and the benchmark for cutting-edge low-latency.
@@ -4760,11 +4847,11 @@ some style/css files and html templates).
 #+begin_src emacs-lisp
       (setq o-blog-local-site "~/Sites/hyperq")
       (setq o-blog-out-dir "~/git/hyperq.github.io")
-      (setq o-blog-local-url-index "http://127.0.0.1/~tonyday/hyper/index.html")
+      (setq o-blog-local-url-index "http://127.0.0.1/~tonyday/hyperq/index.html")
 #+end_src
 
 #+results:
-: http://127.0.0.1/~tonyday/hyper/index.html
+: http://127.0.0.1/~tonyday/hyperq/index.html
 
 *** o-blog debugging
 :PROPERTIES:
