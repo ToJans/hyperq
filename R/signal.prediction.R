@@ -1,3 +1,4 @@
+
 ## [[file:~/projects/hyperq/hyperq.org::*sp500%20data][sp500\ data:1]]
 
 rm(list = ls())

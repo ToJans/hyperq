@@ -1,6 +1,6 @@
 language: haskell
-install:  cabal install --only-dependencies
-script:   cabal configure && cabal build
+install:  cabal install --only-dependencies --enable-tests
+script:   cabal configure --enable-tests && cabal build && cabal test
 notifications:
   email:
     - tonyday567@gmail.com

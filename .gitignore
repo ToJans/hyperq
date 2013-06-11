@@ -23,3 +23,5 @@
 dist
 cabal-dev
 out
+/TAGS
+/src/Dot.o

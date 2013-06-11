@@ -1,3 +1,4 @@
+
 ## [[file:~/projects/hyperq/hyperq.org::*weighting%20function][weighting\ function:1]]
 
 weighted.curve = function(maxn,slope,weight,delay) {

@@ -1,0 +1,42 @@
+
+Archived entries from file /Users/tonyday/projects/hyperq/hyperq.org
+
+
+* Archived Tasks
+
+** Controller.hs
+:PROPERTIES:
+:tangle:   haskell/hyperqdev/Controller.hs
+:ARCHIVE_TIME: 2013-05-24 Fri 18:07
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_OLPATH: controller
+:ARCHIVE_CATEGORY: hyperq
+:END:
+
+#+begin_src haskell
+-- Example
+--
+-- $ ghc --make Controller.hs
+-- $ ./Controller
+import ControllerTest
+import System.Environment
+import Data.Maybe
+
+main :: IO ()
+main = do
+     a <- getArgs
+     let f = fromMaybe "../dot/candidate.dot" $ listToMaybe a 
+     dotGraph <- importDotFile f 
+     putStrLn "nodes:"
+     putStrLn $ show $ nodeList dotGraph
+     putStrLn "connections:"
+     putStrLn $ show $ edgeList dotGraph
+     return ()
+
+#+end_src
+
+#+results:
+: <interactive>:18:19: Not in scope: `edgeList'
+: 
+: <interactive>:18:28: Not in scope: `dotGraph'
+

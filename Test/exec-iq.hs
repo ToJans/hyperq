@@ -1,9 +1,9 @@
--- [[file:~/projects/hyperq/hyperq.org::*Iqtest][Iqtest:1]]
-
 import Control.Concurrent
 import System.Environment
 import System.Exit
 import Hyperq.Iqconnect
+
+-- $ ./cabal-dev/bin/iq "test.txt"
 
 main :: IO ExitCode
 main = do
@@ -13,5 +13,3 @@ main = do
   putStr "\ndelay finished\n"
   conFileTime "localhost" "5009" file
   return(ExitSuccess)
-
--- Iqtest:1 ends here

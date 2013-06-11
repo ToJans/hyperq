@@ -7,8 +7,9 @@
 #+COLUMNS: %25ITEM %30tangle %5blog %5top %15PAGE
 #+LATEX: t
 
+
 #+PROPERTY: tangle no
-#+PROPERTY: session *R*
+#+PROPERTY: session *haskell*
 #+PROPERTY: comments link
 #+PROPERTY: noarchive t
 
@@ -270,19 +271,41 @@ Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
   
 
 
-* immediate tasks
-- [X] integrate posts and main body
-- [X] get o-blog properties in to o-blog section 
-- [X] integrate README.md and about.html
-- [ ] start writing controller
-    - [ ] feed control
-- [ ] draft 0.2 milestones
-- [ ] connect IB
+* NEXT immediate tasks
+SCHEDULED: <2013-06-10 Mon>
 
-** incoming
-*** opencl
+- [X] hyperq.cabal
+    - [X] remove dummy
+    - [X] remove and test superflous packages
+    - [X] move to standard directory structure for a haskell project 
 
-http://www.arcadianvisions.com/blog/?p=346
+- [-] quick code edits
+    - [X] change directory structure to standard
+    - [ ] tests
+        - dot = echo config
+        - echo = canned stdin and stdout
+        - iq = demo startup, initial commands
+    - [ ] alter cabal for test builds etc
+    - [X] remove ringbuffer link 
+        - [X] quick unhide of internal
+    - [ ] dot making sense in the context of an echo test 
+- [ ] remove haskelly code blocks
+- [ ] travis
+
+git clone http://github.com/simonmichael/hledger.git
+cd hledger
+cabal update
+cabal install ./hledger-lib ./hledger [./hledger-web]
+http://hledger.org/INSTALL.html
+
+- [ ] r -> haskell
+- [ ] incorporate chris system specs 
+
+https://github.com/jstolarek/haskell-testing-stub
+
+- [ ] contact http://tradingphysics.com/
+
+
 
 * technology stack
 
@@ -505,7 +528,7 @@ a comparative advantage:
   literate programming style, this translates to using the right tool for the
   right job and making less compromises with the goals of the project.
 
-** Haskell as the solution
+** Haskell as a core language
 
 The candidate solution to the design criteria is to use haskell for the system coding:
 
@@ -520,8 +543,7 @@ The candidate solution to the design criteria is to use haskell for the system c
   callback hell; C, C++ and Java lead to a much larger code base.
 
 
-
-** Candidate Structure                                              :design:
+** Design Experimentation                                            :design:
 CLOSED: [2013-04-11 Thu 16:46]
 :LOGBOOK:
 - State "DONE"       from ""           [2013-04-11 Thu 16:46]
@@ -530,8 +552,8 @@ CLOSED: [2013-04-11 Thu 16:46]
 :blog:     t
 :top:      t
 :END:
-
-hyperq is in an experimental phase and, as such, there is a need for flexibility
+ 
+hyperq is an experiment in runtime design and, as such, there is a need for flexibility
 in the top-down design of the system. To achieve this, the overall design is
 first being modelled using graphviz.  The current candidate system looks like this:
 
@@ -545,7 +567,6 @@ first being modelled using graphviz.  The current candidate system looks like th
 - there is one read from database and one write to database (red lines)
 - every component registers to an observer component that records system
   state and dynamics (grey dotted).
-
 
 The components have been grouped into several clusters:
 
@@ -627,47 +648,12 @@ digraph G {
 	offwirealgo -> observer [color="#aaaaaa",style=dotted];
 }
 #+end_src
-
+** design -> code automation
 *** haskell interaction
 
 Via haskell, the dot chart can be the specifications for an actual system as well as a
 representation. And via svg technology, the picture can also be modified to
 be a reporting front-end in a production environment.
-
-#+begin_src haskell
-module ControllerTest
-( importDotFile
-, importDot
-, printGraph
-, nodeList
-, edgeList
-) where
-
-import Data.GraphViz
-import qualified Data.Text.Lazy as L
-import qualified Data.Text.Lazy.IO as I
-import qualified Data.GraphViz.Types.Generalised as G
-import Data.Graph.Inductive.Graph
-
-importDotFile :: FilePath -> IO (G.DotGraph String)
-importDotFile f = do
-	dotText <- I.readFile f
-	return $ parseDotGraph dotText
-
-importDot :: L.Text -> G.DotGraph Node
-importDot s = parseDotGraph s
-
-printGraph :: G.DotGraph String -> IO ()
-printGraph d = do
-	putStrLn $ L.unpack $ printDotGraph d
-	return()
-
-nodeList :: G.DotGraph String -> [String]
-nodeList g = map nodeID $ graphNodes g
-
-edgeList :: G.DotGraph String -> [(String,String)]
-edgeList g =  map (\x -> (fromNode x, toNode x)) $ graphEdges g
-#+end_src
 
 So, a new picture generates a new system with potentially new components
 (nodes) and messaging requirements (edges).
@@ -964,111 +950,122 @@ CLOCK: [2013-03-23 Sat 17:00]--[2013-03-23 Sat 17:55] =>  0:55
   The idea is to /start/ with a dot graph and use this to register each
   component and the messaging between components.
   - [ ] register nodes from candidate dot
-  - [ ] swap dotText in Controller.hs from file to hardcoded string (thus
-    removing IO issues)
   - [ ] register edges (which will use STM or common messaging systems)
 
 The Controller module is both a component of the overall system and is the complete system.
 
-To (eventually) compile and run the project, compile and run the following code:
-
-** Controller.hs
-:PROPERTIES:
-:tangle:   haskell/dev/Controller.hs
-:END:
-
-#+begin_src haskell
--- Example
---
--- $ ghc --make Controller.hs
--- $ ./Controller
-import ControllerTest
-import System.Environment
-import Data.Maybe
-
-main :: IO ()
-main = do
-     a <- getArgs
-     let f = fromMaybe "../dot/candidate.dot" $ listToMaybe a 
-     dotGraph <- importDotFile f 
-     putStrLn "nodes:"
-     putStrLn $ show $ nodeList dotGraph
-     putStrLn "connections:"
-     putStrLn $ show $ edgeList dotGraph
-     return ()
-
-#+end_src
-
 ** ControllerTest.hs
 :PROPERTIES:
-:tangle:   haskell/dev/ControllerTest.hs
+:tangle:   haskell/hyperqdev/ControllerTest.hs
 :END:
 
 #+begin_src haskell
-module ControllerTest 
-( importDotFile
-, importDot
-, printGraph
-, nodeList
-, edgeList
-) where
+  module ControllerTest 
+  ( importDotFile
+  , importDot
+  , printGraph
+  , nodeList
+  , edgeList
+  ) where
 
-import Data.GraphViz
-import qualified Data.Text.Lazy as L
-import qualified Data.Text.Lazy.IO as I
-import qualified Data.GraphViz.Types.Generalised as G
-import Data.Graph.Inductive.Graph
+  import Data.GraphViz
+  import Data.GraphViz.Attributes.Complete
+  import Data.GraphViz.Types
+  import qualified Data.Text.Lazy as L
+  import qualified Data.Text.Lazy.IO as I
+  -- import qualified Data.GraphViz.Types.Generalised as G
+  import Data.Graph.Inductive.Graph
+  import qualified Data.Map as Map
+  import Data.Map(Map)
 
-importDotFile :: FilePath -> IO (G.DotGraph String)
-importDotFile f = do
-        dotText <- I.readFile f 
-        return $ parseDotGraph dotText
+  importDotFile :: FilePath -> IO (DotGraph String)
+  importDotFile f = do
+          dotText <- I.readFile f 
+          return $ parseDotGraph dotText
 
-importDot :: L.Text -> G.DotGraph Node
-importDot s = parseDotGraph s
+  importDot :: L.Text -> DotGraph Node
+  importDot s = parseDotGraph s
 
-printGraph :: G.DotGraph String -> IO ()
-printGraph d = do
-        putStrLn $ L.unpack $ printDotGraph d
-        return()
+  printGraph :: DotGraph String -> IO ()
+  printGraph d = do
+          putStrLn $ L.unpack $ printDotGraph d
+          return()
 
-nodeList :: G.DotGraph String -> [String]
-nodeList g = map nodeID $ graphNodes g
+  nodeList :: DotGraph String -> [String]
+  nodeList g = map nodeID $ graphNodes g
 
-edgeList :: G.DotGraph String -> [(String,String)]
-edgeList g =  map (\x -> (fromNode x, toNode x)) $ graphEdges g
+  edgeList :: DotGraph String -> [(String,String)]
+  edgeList g =  map (\x -> (fromNode x, toNode x)) $ graphEdges g
+
+  data CompType = Internal 
+                | External
+                deriving Show
+
+  comp :: DotGraph String -> [(String, CompType)]
+  comp g = zip name s where
+       name = map nodeID n
+       s =  map compType $ map nodeAttributes n
+       n = toDotNodes $ nodeInformationClean True g
+
+  toDotNodes :: (Ord n) => NodeLookup n -> [DotNode n]
+  toDotNodes k = map $ (\(n,(_,as)) -> DotNode n as) . Map.assocs k
+
+  dir :: [Attribute] -> DirType
+  dir [] = Forward
+  dir x = 
+      let d = [a | Dir a <- x]
+      in case d of
+         [] -> Forward
+         _ -> head d
+
+  compType :: [Attribute] -> CompType
+  compType [] = Internal
+  compType x = 
+      let d = [a | Shape a <- x]
+      in case d of
+         [] -> Internal
+         [Egg] -> External
+         _ -> Internal
+
+
+  comm :: DotGraph String -> [(String, String, DirType)]
+  comm g = zip3 from to d where 
+       e = edgeInformationClean True g
+       d = map dir $ map edgeAttributes e
+       from = map fromNode e
+       to = map toNode e
+
+  data CommType = Read 
+                | Write
+                deriving Show
+
+
+  commChan :: (String, String, DirType) -> [(String, String, CommType)]
+  commChan (f,t,Both)          = [(f,t,Write)
+                                 ,(f,t,Read)]
+  commChan (f,t,Forward)       = [(f,t,Write)]
+  commChan (f,t,Back)          = [(f,t,Read)]
+  commChan _                   = []
 #+end_src
 
 ** edges
 
-#+begin_src haskell :results value
-import ControllerTest
-g <- importDotFile "../dot/test.unit2.dot"
-edgeList g
+#+begin_src haskell
+  import ControllerTest
+  g <- importDotFile "./dot/iqcontroller.dot"
+  map commChan $ comm g 
 #+end_src
 
 #+results:
-| exchange         | aggregator       |
-| aggregator       | localport        |
-| observer         | databases        |
-| controller       | eventalgo        |
-| disruptor        | listener         |
-| disruptor        | eventalgo        |
-| disruptor        | controller       |
-| controller       | disruptor        |
-| broker           | brokeraggregator |
-| brokeraggregator | trader           |
-| localport        | observer         |
-| controller       | localport        |
-| localport        | disruptor        |
-| listener         | observer         |
-| controller       | observer         |
-| controller       | trader           |
-| controller       | offwirealgo      |
-| databases        | offwirealgo      |
-| trader           | observer         |
-| eventalgo        | observer         |
-| offwirealgo      | observer         |
+: *ControllerTest Data.GraphViz L I G Data.Graph.Inductive.Graph Data.GraphViz.Attributes.Complete ControllerTest> [[("controller","admin",Write),("controller","admin",Read)],[("admin","adminport",Write),("admin","adminport",Read)],[("controller","marketport",Write),("controller","marketport",Read)],[("controller","lookupport",Write),("controller","lookupport",Read)],[("controller","STDIN",Read)],[("controller","STDOUT",Write)]]
+
+#+begin_src haskell
+dir :: [Attribute] -> DirType
+dir x = [a | Dir a <- x]
+#+end_src
+
+#+results:
+: <interactive>:209:7: parse error on input `='
 
 
 ** nodes
@@ -1112,7 +1109,8 @@ ghc --make Controller.hs
 : [("exchange","aggregator"),("aggregator","localport"),("observer","databases"),("controller","eventalgo"),("disruptor","listener"),("disruptor","eventalgo"),("disruptor","controller"),("controller","disruptor"),("broker","brokeraggregator"),("brokeraggregator","trader"),("localport","observer"),("controller","localport"),("localport","disruptor"),("listener","observer"),("controller","observer"),("controller","trader"),("controller","offwirealgo"),("databases","offwirealgo"),("trader","observer"),("eventalgo","observer"),("offwirealgo","observer")]
 
 
-* TODO market data feed
+
+* NEXT market data feed
 ** Market Feed Selection
 CLOSED: [2013-04-12 Thu 12:46]
 :LOGBOOK:
@@ -1284,11 +1282,11 @@ fixme:heap:HeapSetInformation 0x0 1 0x0 0
 R sucks at asynchronous programming.
 
 
-** haskell interfacing
+** NEXT haskell interfacing
 
 *** Feed
 :PROPERTIES:
-:tangle:   haskell/dev/Feed.hs
+:tangle:   haskell/hyperqdev/Feed.hs
 :END:
 
 no automation or control yet
@@ -1298,7 +1296,7 @@ no automation or control yet
 To compile and run:
 
 #+begin_src sh :results output :tangle no
-cd haskell/dev
+cd haskell/hyperqdev
 ghc --make Feed.hs threaded
 ./Feed data.out
 #+end_src
@@ -1501,20 +1499,57 @@ main = do
 
 
 *** NEXT Iqtest development
-SCHEDULED: <2013-05-19 Sun>
+SCHEDULED: <2013-06-03 Mon>
 :LOGBOOK:
 CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
 :END:
 :PROPERTIES:
-:tangle:   haskell/dev/Iqtest.hs
+:tangle:   haskell/hyperqdev/Iqtest.hs
 :END:
 
 - [ ] set up testing harness
     - [ ] dot of schema
-    - [ ] travis ready
+    - [ ] setup travis
 
 
+**** dot
+:PROPERTIES:
+:tangle:   dot/iqcontroller.dot
+:END:
 
+#+begin_src dot :file img/iqtest.png :cmdline -Kdot -Tpng :exports both
+  digraph G {
+          node [label="\N"];
+          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+          
+          subgraph cluster_feed {
+                  graph [label="feed control",
+                          color="#909090"];
+                  node [style=filled];
+                  controller;
+                  admin;
+                  controller -> admin [color="#aaaaaa",dir=both]
+          }
+          subgraph cluster_iqport {
+                  graph [label="iqport",
+                          color="#909090"];
+                  adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
+          }
+          
+          admin -> adminport [color="#aaaaaa",dir=both];
+          controller -> marketport [color="#aaaaaa", dir=both];
+          controller -> lookupport [color="#aaaaaa", dir=both];
+          controller -> stdin [color="#aaaaaa", dir=back]
+          controller -> stdout [color="#aaaaaa"]
+  }
+#+end_src
+
+#+results:
+[[file:img/iqtest.png]]
+
+**** dev notes
 - things that need to be (step 1)
   - a logon process
   - a delay if we are logging on
@@ -1531,13 +1566,11 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
   - code that decides what is written to each port
   - a place to log to + a stamp
   - a Controller (a big ? on this) that isn't main
-
 - abstractions
   - these are all threads
   - portWriter
   - portReader (portListener)
   - portLogger (is this a specialisation of portReader)
-    
 - state information
   - is iqconnect up and are we logged on?
     - interrogation of system threads?
@@ -1545,7 +1578,6 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
   - which processes are running?  Do we need to know this?
     - promises baked in to portWriter etc (?)
     - do processes need to register with a Controller?
-
 - things that need to be (step 2):
 
   - login
@@ -1554,7 +1586,7 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
       it will only be invoked by the manager when admin port throws
       an error.
 
-  - manager
+  - admin
     - an admin portReader that
     - decides if iqconnect is logged on (how? - via port error)
     - relogs if the connection is bung (up to a limit)
@@ -1565,7 +1597,7 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
     - stops and starts other processes (?)
 
   - a main that
-    - starts manager
+    - starts admin
     - starts ALL portReaders
     - starts the worker pool
     - listens for a stop instruction (IO)
@@ -1595,10 +1627,8 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
   - a worker pool (STM) for all threads that
     - provides a new thread
     - stop/starts threads (?)
-    - monitors threads (?)
+    - monitors threads (?)  
 
-  
-steps
 - heirarchy (small to big)
     - logon
     - portReader
@@ -1607,169 +1637,113 @@ steps
         - historyWriter
         - feedWriter
         - level2Writer
-
     - workerPool
     - manager (connection management)
     - main
 
+**** register
+
+***** channels
+
 #+begin_src haskell
-  import Control.Concurrent
-  import Network
-  import System.Environment
-  import System.Process
-  import System.IO
-  import Control.Exception
-  import System.Exit
-  import Control.Monad (forever)
-  import Data.Time.Clock
-  import Data.Time.Format
-  import System.Locale
-  import Text.Regex.TDFA
-  
-  logon :: IO ()
-  logon = do
-    let cmd = "wine"
-        args = ["Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe", "-product IQFEED_DEMO -version 1"]
-    _ <- rawSystem cmd args
-    return()
-  
-  
-
-
-
-
-
-  start :: String -> String -> IO ()
-  start host port = do
-      h <- try (connectTo host $ PortNumber $ toEnum $ read port) :: IO (Either SomeException Handle)
-      case h of
-        Left ex -> case () of _ 
-                                | "connect: does not exist" =~ show ex  -> logon
-                                | otherwise -> putStrLn $ "Caught Exception: " ++ show ex
-   
-        Right val -> hGetContents val >>= putStr
-      return ()
-  
-  
-  
-  con :: String -> String -> IO ()
-  con host port = do
-      h <- connectTo host $ PortNumber $ toEnum $ read port
-      hSetBuffering stdout LineBuffering
-      hSetBuffering h      LineBuffering
-      done <- newEmptyMVar
-  
-      _ <- forkIO $ (hGetContents h >>= putStr)
-                  `finally` tryPutMVar done ()
-  
-      _ <- forkIO $ (getContents >>= hPutStr h)
-                  `finally` tryPutMVar done ()
-  
-                  -- Wait for at least one of the above threads to complete
-      takeMVar done
-  
-  
-  conFileTime :: String -> String -> String -> IO ()
-  conFileTime host port file = do
-      h <- connectTo host $ PortNumber $ toEnum $ read port
-      f <- openFile file WriteMode
-      hSetBuffering stdout LineBuffering
-      hSetBuffering h      LineBuffering
-      hSetBuffering f      LineBuffering
-      done <- newEmptyMVar
-  
-      _ <- forkIO $ forever (do
-                          t <- getCurrentTimeString
-                          st <- hGetLine h
-                          hPutStrLn f $ t ++ "," ++ st)
-                  `finally` tryPutMVar done ()
-  
-      _ <- forkIO $ (getContents >>= hPutStr h)
-                  `finally` tryPutMVar done ()
-  
-                  -- Wait for at least one of the above threads to complete
-      takeMVar done
-  
-  conAdmin :: String -> IO ()
-  conAdmin cmds = do
-    con "localhost" "9300"
-    putStr cmds
-  
-  conStream :: String -> IO ()
-  conStream cmds = do
-    con "localhost" "5009"
-    putStr cmds
-  
-  conLookup :: String -> IO ()
-  conLookup cmds = do
-    con "localhost" "9100"
-    putStr cmds
-  
-  
-  
-  getCurrentTimeString :: IO String
-  getCurrentTimeString = do
-     now <- getCurrentTime
-     return (formatTime defaultTimeLocale "%H:%M:%S%Q" now)
-  
-  
-  main :: IO ExitCode
-  main = do
-    [file] <- getArgs
-    -- _ <- forkIO (logon)
-    -- threadDelay $ 1000000 * 6
-    -- putStr "\ndelay finished\n"
-    conFileTime "localhost" "5009" file
-    return(ExitSuccess)
+  import ControllerTest
+  g <- importDotFile "./dot/iqcontroller.dot"
+  map commChan $ comm g 
 #+end_src
 
+#+results:
+| (controller admin Write)      | (controller admin Read)      |
+| (admin adminport Write)       | (admin adminport Read)       |
+| (controller marketport Write) | (controller marketport Read) |
+| (controller lookupport Write) | (controller lookupport Read) |
+| (controller stdin Read)       |                              |
+| (controller stdout Write)     |                              |
 
-*** threading example
+***** components
 
-from http://www.haskell.org/haskellwiki/Background_thread_example
-
-#+begin_src haskell :tangle haskell/dev/Background.hs
-import Control.Monad
-import Control.Concurrent
-import Control.Exception as E
-import Control.Concurrent.STM
-
-type Work = IO ()
-
-type SendWork = Work -> STM ()
-
-spawnWorkers :: Int -> IO (SendWork,IO ())
-spawnWorkers i | i <= 0 = error "Need positive number of workers"
-               | otherwise = do
-    workChan <- atomically newTChan
-    runCount <- atomically (newTVar i)
-    let stop = atomically (writeTVar runCount . pred =<< readTVar runCount)
-        die e = do id <- myThreadId
-                   print ("Thread "++show id++" died with exception "++show (e :: ErrorCall))
-                   stop
-        work = do mJob <- atomically (readTChan workChan)
-                  case mJob of Nothing -> stop
-                               Just job -> E.catch job die >> work
-    replicateM_ i (forkIO work)
-    let stopCommand = do atomically (replicateM_ i (writeTChan workChan Nothing))
-                         atomically (do running <- readTVar runCount
-                                        when (running>0) retry)
-    return (writeTChan workChan . Just,stopCommand)
-
-printJob :: Int -> IO ()
-printJob i = do threadDelay (i*1000)
-                id <- myThreadId
-                print ("printJob took "++show i++" ms in thread "++show id)
-
-main :: IO ()
-main = do
-  (submit,stop) <- spawnWorkers 10
-  mapM_ (atomically . submit . printJob) (take 40 (cycle [100,200,300,400]))
-  atomically $ submit (error "Boom")
-  stop
-
+#+begin_src haskell
+  import ControllerTest
+  g <- importDotFile "./dot/iqcontroller.dot"
+  comp g 
 #+end_src
 
+#+results:
+| admin      | Internal |
+| adminport  | External |
+| controller | Internal |
+| lookupport | External |
+| marketport | External |
+| stdin      | Internal |
+| stdout     | Internal |
+
+
+
+
+
+
+**** echo-test
+components
+- cStdin 
+    - reads from stdin
+    - sequences to cController<-cStdin
+- cController
+    - consumes from cController<-cStdin
+    - sequences to cStdout<-cController
+- cStdout
+    - consumes from cStdout<-cController
+    - writes to stdout
+
+
+***** dot
+:PROPERTIES:
+:tangle:   dot/echo-test.dot
+:END:
+
+#+begin_src dot :file img/echo-test.png :cmdline -Kdot -Tpng :exports both
+  digraph G {
+          node [label="\N"];
+          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+          controller -> stdin [color="#aaaaaa", dir=back]
+          controller -> stdout [color="#aaaaaa"]
+  }
+#+end_src
+
+#+results:
+[[file:img/echo-test.png]]
+
+***** buffers
+
+#+begin_src haskell
+  import ControllerTest
+  g <- importDotFile "./dot/echo-test.dot"
+  buffs g
+#+end_src
+
+#+results:
+: fromList [("controller",["stdout"]),("stdin",["controller"])]
+
+
+
+
+
+*** background workers
+
+http://www.haskell.org/haskellwiki/Background_thread_example
+
+http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/index.htm
+
+
+
+- [X] understand stm operations
+- [ ] create x components
+    - a component has:
+      - maybe an emitter (is this a writer?)
+      - maybe a receiver (is this a reader)
+      - maybe a fn(receiver) = emission
+    - [ ] work out which has which from dot
+    - [ ] fake producers (for relevant components)
+- [ ] create readers and writers
+    - [ ] writers (producers) need consumers?
 
 
 *** latency research
@@ -3208,7 +3182,6 @@ of the proposed system design.
 
 
 ** TODO Signal Prediction                                                :R:
-SCHEDULED: <2013-05-23 Thu>
 [2013-04-22 Mon 17:12] 
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2013-04-22 Mon 17:12]

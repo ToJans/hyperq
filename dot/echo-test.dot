@@ -1,0 +1,10 @@
+// [[file:~/projects/hyperq/hyperq.org::*dot][dot:1]]
+
+digraph G {
+        node [label="\N"];
+        node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+        controller -> stdin [color="#aaaaaa", dir=back]
+        controller -> stdout [color="#aaaaaa"]
+}
+
+// dot:1 ends here

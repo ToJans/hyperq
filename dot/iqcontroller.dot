@@ -1,0 +1,31 @@
+
+// [[file:~/projects/hyperq/hyperq.org::*dot][dot:1]]
+
+digraph G {
+        node [label="\N"];
+        node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+        
+        subgraph cluster_feed {
+                graph [label="feed control",
+                        color="#909090"];
+                node [style=filled];
+                controller;
+                admin;
+                controller -> admin [color="#aaaaaa",dir=both]
+        }
+        subgraph cluster_iqport {
+                graph [label="iqport",
+                        color="#909090"];
+                adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
+        }
+        
+        admin -> adminport [color="#aaaaaa",dir=both];
+        controller -> marketport [color="#aaaaaa", dir=both];
+        controller -> lookupport [color="#aaaaaa", dir=both];
+        controller -> stdin [color="#aaaaaa", dir=back]
+        controller -> stdout [color="#aaaaaa"]
+}
+
+// dot:1 ends here

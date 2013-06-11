@@ -1,43 +1,18 @@
--- [[file:~/projects/hyperq/hyperq.org::*Iqtest%20development][Iqtest\ development:1]]
+
+-- [[file:~/projects/hyperq/hyperq.org::*Hyperq.Iqconnect][Hyperq\.Iqconnect:1]]
+
+module Hyperq.Iqconnect where 
 
 import Control.Concurrent
 import Network
-import System.Environment
 import System.Process
 import System.IO
 import Control.Exception
-import System.Exit
 import Control.Monad (forever)
 import Data.Time.Clock
 import Data.Time.Format
+import Data.Time.Calendar
 import System.Locale
-import Text.Regex.TDFA
-
-logon :: IO ()
-logon = do
-  let cmd = "wine"
-      args = ["Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe", "-product IQFEED_DEMO -version 1"]
-  _ <- rawSystem cmd args
-  return()
-
-
-
-
-
-
-
-start :: String -> String -> IO ()
-start host port = do
-    h <- try (connectTo host $ PortNumber $ toEnum $ read port) :: IO (Either SomeException Handle)
-    case h of
-      Left ex -> case () of _ 
-                              | "connect: does not exist" =~ show ex  -> logon
-                              | otherwise -> putStrLn $ "Caught Exception: " ++ show ex
- 
-      Right val -> hGetContents val >>= putStr
-    return ()
-
-
 
 con :: String -> String -> IO ()
 con host port = do
@@ -54,7 +29,6 @@ con host port = do
 
                 -- Wait for at least one of the above threads to complete
     takeMVar done
-
 
 conFileTime :: String -> String -> String -> IO ()
 conFileTime host port file = do
@@ -92,21 +66,18 @@ conLookup cmds = do
   con "localhost" "9100"
   putStr cmds
 
+logon :: IO ()
+logon = do
+  let cmd = "wine"
+      args = ["Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe", "-product IQFEED_DEMO -version 1"]
+  _ <- rawSystem cmd args
+  return()
 
 
 getCurrentTimeString :: IO String
 getCurrentTimeString = do
    now <- getCurrentTime
-   return (formatTime defaultTimeLocale "%H:%M:%S%Q" now)
+   let offset = diffUTCTime  (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)) (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime (4 * 60 * 60)))
+   return (formatTime defaultTimeLocale "%H:%M:%S%Q" $ addUTCTime offset now)
 
-
-main :: IO ExitCode
-main = do
-  [file] <- getArgs
-  -- _ <- forkIO (logon)
-  -- threadDelay $ 1000000 * 6
-  -- putStr "\ndelay finished\n"
-  conFileTime "localhost" "5009" file
-  return(ExitSuccess)
-
--- Iqtest\ development:1 ends here
+-- Hyperq\.Iqconnect:1 ends here
