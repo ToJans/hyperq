@@ -6,9 +6,6 @@ install:
  - cabal install
  - cd ..
  - cabal install --only-dependencies --enable-tests
- - cabal configure
- - cabal build
- - cabal test
 notifications:
   email:
     - tonyday567@gmail.com
