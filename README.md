@@ -25,6 +25,8 @@ fork me with:
 
 ```
 $ git clone https://github.com/hyperq/hyperq.git
+$ git submodule init
+$ git submodule update
 ```
 
 ## News
