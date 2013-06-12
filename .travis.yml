@@ -1,9 +1,12 @@
 language: haskell
+before_install:
+  - git submodule update --init --recursive
 install:  
  - cd data-ringbuffer
- - cabal install --only-dependencies
+ - cabal install
  - cd ..
  - cabal install --only-dependencies --enable-tests
+ - cabal test
 notifications:
   email:
     - tonyday567@gmail.com
