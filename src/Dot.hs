@@ -81,16 +81,11 @@ comm g = zip3 from to d where
      from = map fromNode e
      to = map toNode e
 
-data CommType = Read 
-              | Write
-              deriving Show
-
-
-commChan :: (String, String, DirType) -> [(String, String, CommType)]
-commChan (f,t,Both)          = [(f,t,Write)
-                               ,(f,t,Read)]
-commChan (f,t,Forward)       = [(f,t,Write)]
-commChan (f,t,Back)          = [(f,t,Read)]
+commChan :: (String, String, DirType) -> [(String, String, String)]
+commChan (f,t,Both)          = [(f,t,"Write")
+                               ,(f,t,"Read")]
+commChan (f,t,Forward)       = [(f,t,"Write")]
+commChan (f,t,Back)          = [(f,t,"Read")]
 commChan _                   = []
 
 commRB :: (String, String, DirType) -> [(String, String)]

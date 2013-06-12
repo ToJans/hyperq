@@ -31,6 +31,3 @@ printTiming' start end = do
     where
         time :: Double -> String
         time = printf "%.4f sec"
-
-
--- vim: set ts=4 sw=4 et:

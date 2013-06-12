@@ -39,7 +39,7 @@ printJob i = do threadDelay (i*1000)
 testRun :: IO ()
 testRun = do
   (submit,stop,ids) <- spawnWorkers 10
-  mapM_ (\x -> (print $ " " ++ (show x))) ids
+  mapM_ (\x -> print $ ' ' : show x) ids
   mapM_ (atomically . submit . printJob) (take 100 (cycle [100,200,300,400]))
   atomically $ submit (error "Boom")
   stop

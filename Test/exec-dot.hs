@@ -8,4 +8,3 @@ main = do
   g <- Dot.importDotFile file
   print $ map Dot.commChan $ Dot.comm g
   return()
-

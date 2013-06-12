@@ -1,6 +1,3 @@
-
--- [[file:~/projects/hyperq/hyperq.org::*Hyperq.Iqconnect][Hyperq\.Iqconnect:1]]
-
 module Hyperq.Iqconnect where 
 
 import Control.Concurrent

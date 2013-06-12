@@ -1,26 +1,28 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module EchoBackground (run,
-                       concBatchPublishTo') where
+module EchoBackground (run
+                     , runString
+                     , concBatchPublishTo') where
 
-import Control.Applicative    ((*>))
-import Control.Concurrent     ( newEmptyMVar
-                              , putMVar
-                              , takeMVar
-                              -- , forkIO
-                              , MVar
-                              )
-import Control.Monad
+import           Control.Applicative    ((*>))
+import           Control.Concurrent     ( newEmptyMVar
+                                        , putMVar
+                                        , takeMVar
+                                        , readMVar
+                                        , MVar
+                                        , killThread
+                                        )
+import           Control.Monad
 -- import Control.DeepSeq
-import Data.RingBuffer
-import Data.RingBuffer.Vector
-import Data.RingBuffer.Types
-import Data.RingBuffer.Internal
-import Util
-import Background
-import Control.Concurrent.STM
-import Control.Concurrent (killThread)
-import Control.Exception.Base
-import Data.Typeable
+import           Background
+import           Control.Concurrent.STM
+import           Control.Exception.Base
+import           Data.Char
+import           Data.RingBuffer
+import           Data.RingBuffer.Internal
+import           Data.RingBuffer.Types
+import           Data.RingBuffer.Vector
+import           Data.Typeable
+import           Util
 
 -- import Data.Time
 -- import System.Random
@@ -86,9 +88,18 @@ consumeFrom' (MVector mvec) modm barr (Consumer fn sq) = do
 
 printOrDone :: MVar Int -> Int -> IO ()
 printOrDone done x
-  | (toEnum x) == 'q' = putMVar done 1
+  | toEnum x == 'q' = putMVar done 1
   | otherwise = putChar $ toEnum x
                 -- $ trace ("\nwriting a char " ++ (show (toEnum x :: Int))) x
+
+printOrDone' :: MVar Int -> MVector Int -> MVar Int -> Int -> IO ()
+printOrDone' done (MVector ans) mvc x
+  | toEnum x == 'q' = putMVar done 1
+  | otherwise = do
+                c <- readMVar mvc
+                _ <- MV.unsafeWrite ans c x                
+                _ <- putMVar mvc (c + 1)
+                return()
 
 data MyException = ThisException | ThatException
                  deriving (Show, Typeable)
@@ -102,14 +113,14 @@ run = do
   buf   <- newRingBuffer bufferSize (0 :: Int)
   start <- now
   (submit,_,ids) <- spawnWorkers 2
-  mapM_ (\x -> (print $ " " ++ (show x))) ids
+  mapM_ (\x -> print $ ' ' : show x) ids
   atomically . submit . forever
     $ do
       c <- getChar
-      (concPublishTo' buf modmask seqr) $ fromEnum c
+      concPublishTo' buf modmask seqr $ fromEnum c
 
   atomically . submit . forever
-    $ do consumeFrom' buf modmask (newBarrier seqr []) con
+    $ consumeFrom' buf modmask (newBarrier seqr []) con
   -- atomically $ submit (error "Boom")
   -- takeMVar done *> now >>= printTiming' start >> stop >> mapM_ (flip throwTo ThisException) ids
   -- stop
@@ -118,6 +129,37 @@ run = do
     
   -- replicateM_ 2 (atomically $ submit (error "Boom"))
   -- stop
+
+  where
+        bufferSize = 1024*8
+        modmask    = bufferSize - 1
+
+runString :: IO String
+runString = do
+  answer <- do
+      m <- MV.replicate 100 0
+      return(MVector m)
+  count <- newEmptyMVar
+  done  <- newEmptyMVar
+  con   <- newConsumer (printOrDone' done answer count)
+  seqr  <- newSequencer [con]
+  buf   <- newRingBuffer bufferSize (0 :: Int)
+  start <- now
+  (submit,_,ids) <- spawnWorkers 2
+  mapM_ (\x -> print $ ' ' : show x) ids
+  atomically . submit . forever $ do
+              mapM_ (concPublishTo' buf modmask seqr) $ map fromEnum "This is a test string that will be published one character at a time until a q is reached"
+              return()
+
+  atomically . submit . forever
+    $ consumeFrom' buf modmask (newBarrier seqr []) con
+
+  takeMVar done *> now >>= printTiming' start >> mapM_ killThread ids
+  c <- readMVar count
+  let (MVector mvec) = answer
+      (t,_) = MV.splitAt (c+1) mvec
+  s <- MV.unsafeRead t 1
+  return [chr s]
 
   where
         bufferSize = 1024*8

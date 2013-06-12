@@ -1,6 +1,3 @@
-
--- [[file:~/projects/hyperq/hyperq.org::*Feed][Feed:1]]
-
 import Control.Concurrent
 import Network
 import System.Environment
@@ -90,5 +87,3 @@ main = do
   putStr "\ndelay finished\n"
   conFileTime "localhost" "5009" file
   return(ExitSuccess)
-
--- Feed:1 ends here

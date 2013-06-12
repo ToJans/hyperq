@@ -16,8 +16,8 @@ instance AEq Double where
     x =~ y = abs ( x - y ) < (1.0e-8 :: Double)
 
 instance (AEq a) => AEq [a] where
-    xs =~ ys = (length xs == length ys) &&
-                (all (\(x,y) -> x =~ y) $ zip xs ys)
+    xs =~ ys = length xs == length ys &&
+                all (\(x,y) -> x =~ y) zip xs ys
 
 instance (AEq a) => AEq (Maybe a) where
     Nothing =~ Nothing = True

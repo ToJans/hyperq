@@ -19,12 +19,19 @@ tests =
   [
     testGroup "Dot Graph utilities"
     [
-       testWithProvider "String Dot spec to node list" testImportDot dataImportDot 
+       testWithProvider "String Dot spec to node list" testImportDotNode dataImportDotNode,
+       testWithProvider "String Dot spec to channel list" testImportDotChan dataImportDotChan
     ]
   ]
 
-testImportDot :: (String, [String]) -> Assertion
-testImportDot (s, expected) = expected @=? (nodeList . importDot) s
+testImportDotNode :: (String, [String]) -> Assertion
+testImportDotNode (s, expected) = expected @=? (nodeList . importDot) s
 
-dataImportDot :: [(String, [String])]
-dataImportDot = [("digraph G {\nnode [label=\"\\N\"];\nnode [style=filled, color=\"#1f3950\",fontcolor=\"#eeeeee\",shape=box];\ncontroller -> stdin [color=\"#aaaaaa\", dir=back]\ncontroller -> stdout [color=\"#aaaaaa\"]}",["controller","stdin","stdout"])]
+dataImportDotNode :: [(String, [String])]
+dataImportDotNode = [("digraph G {\nnode [label=\"\\N\"];\nnode [style=filled, color=\"#1f3950\",fontcolor=\"#eeeeee\",shape=box];\ncontroller -> stdin [color=\"#aaaaaa\", dir=back]\ncontroller -> stdout [color=\"#aaaaaa\"]}",["controller","stdin","stdout"])]
+
+testImportDotChan :: (String, [(String, String, String)]) -> Assertion
+testImportDotChan (s, expected) = expected @=? concatMap commChan (comm $ importDot s)
+
+dataImportDotChan :: [(String, [(String, String, String)])]
+dataImportDotChan = [("digraph G {\nnode [label=\"\\N\"];\nnode [style=filled, color=\"#1f3950\",fontcolor=\"#eeeeee\",shape=box];\ncontroller -> stdin [color=\"#aaaaaa\", dir=back]\ncontroller -> stdout [color=\"#aaaaaa\"]}",[("controller","stdin","Read"),("controller","stdout","Write")])]

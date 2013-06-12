@@ -1,5 +1,3 @@
--- [[file:~/projects/hyperq/hyperq.org::*ControllerTest.hs][ControllerTest\.hs:1]]
-
 module ControllerTest 
 ( importDotFile
 , printGraph

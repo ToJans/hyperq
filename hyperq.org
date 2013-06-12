@@ -7,7 +7,6 @@
 #+COLUMNS: %25ITEM %30tangle %5blog %5top %15PAGE
 #+LATEX: t
 
-
 #+PROPERTY: tangle no
 #+PROPERTY: session *haskell*
 #+PROPERTY: comments link
@@ -274,38 +273,25 @@ Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
 * NEXT immediate tasks
 SCHEDULED: <2013-06-10 Mon>
 
-- [X] hyperq.cabal
-    - [X] remove dummy
-    - [X] remove and test superflous packages
-    - [X] move to standard directory structure for a haskell project 
 
-- [-] quick code edits
-    - [X] change directory structure to standard
-    - [ ] tests
-        - dot = echo config
-        - echo = canned stdin and stdout
-        - iq = demo startup, initial commands
-    - [ ] alter cabal for test builds etc
-    - [X] remove ringbuffer link 
-        - [X] quick unhide of internal
-    - [ ] dot making sense in the context of an echo test 
 - [ ] remove haskelly code blocks
 - [ ] travis
+     data-ringbuffer will require separate build as follows:
 
-git clone http://github.com/simonmichael/hledger.git
-cd hledger
-cabal update
-cabal install ./hledger-lib ./hledger [./hledger-web]
-http://hledger.org/INSTALL.html
+     git clone http://github.com/simonmichael/hledger.git
+     cd hledger
+     cabal update
+     cabal install ./hledger-lib ./hledger [./hledger-web]
 
+     http://hledger.org/INSTALL.html
+
+* one day
+- [ ] haskell test for iq
+    - [ ] wine solution in travis
+    - [ ] iqfeed addition for travis (or download)
 - [ ] r -> haskell
-- [ ] incorporate chris system specs 
-
-https://github.com/jstolarek/haskell-testing-stub
-
+- [ ] incorporate system specs 
 - [ ] contact http://tradingphysics.com/
-
-
 
 * technology stack
 
@@ -723,7 +709,7 @@ hyperq is in an experimental phase and, as such, there is a need for flexibility
 in the top-down design of the system. To achieve this, the overall design is
 first being modelled using graphviz.  The current candidate system is:
 
-** candidate svg dot
+** candidate svg dot file
 
 #+begin_src dot :file img/candidate.svg :cmdline -Kdot -Tsvg :exports both
 digraph G {
@@ -819,294 +805,43 @@ There are several ideas that are being tested:
   robustness testing)
 
 
-** dot files
-
-Some alternative graphs for testing purposes:
-
-*** sandpit dot
-
-#+begin_src dot :file dot/sandpit2.png :cmdline -Kdot -Tpng :exports both
-digraph G {
-        node [label="\N"];
-        node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box]; 
-        subgraph cluster_market_data {
-                graph [label="market data", color="#909090"];
-                {rank=min; dataaggregator [shape=egg,color="#cc11cc22",fontcolor="#101010",label="market(s)"];}
-                localport [label="local market data stream"];
-                dataaggregator -> localport [dir=both];
-        }
-        subgraph cluster_offwire {
-                graph [label="offwire",
-                        color="#909090"];
-                offwirealgo [label="offline algo"];
-                observer;
-                databases;
-                observer -> databases [color=red,label="write",fontcolor=red];
-        }
-        subgraph cluster_onwire {
-                graph [label="onwire",
-                        color="#909090"];
-                node [style=filled];
-                disruptor [label="event server"];
-                eventalgo [label="algo"];
-                controller;
-                controller -> eventalgo [color="#aaaaaa",dir=both]
-                disruptor -> listener;
-                disruptor -> eventalgo;
-                disruptor -> controller;
-                controller -> disruptor [color="#0080ff"];
-        }
-        subgraph cluster_broker {
-                graph [label="broker",
-                        color="#909090"];
-                brokeraggregator [shape=egg,color="#cc11cc22",fontcolor="#101010",label="broker(s)"];
-                brokeraggregator -> trader [dir=both];
-        }
-        localport -> observer [color="#aaaaaa",style=dotted];
-        controller -> localport [color="#aaaaaa"];
-        localport -> disruptor [color="#0080ff"];
-        listener -> observer [color="#aaaaaa",style=dotted];
-        controller -> observer [color="#aaaaaa",style=dotted];
-        controller -> trader [color="#aaaaaa",dir=both];
-        controller -> offwirealgo [color="#aaaaaa",dir=both];
-        databases -> offwirealgo [color=red,label="read",fontcolor=red];
-        trader -> observer [color="#aaaaaa",style=dotted];
-        eventalgo -> observer [color="#aaaaaa",style=dotted];
-        offwirealgo -> observer [color="#aaaaaa",style=dotted];
-}
-#+end_src
-
-#+results:
-[[file:dot/sandpit2.png]]
-
-
-*** test.unit1.dot
+** feed component
 :PROPERTIES:
-:tangle:   dot/test.unit1.dot
+:tangle:   dot/iqcontroller.dot
 :END:
 
-#+begin_src dot :file img/test.canon.png :cmdline -Kdot -Tpng :exports both :cache yes
-digraph G {
-        node [label="\N"];
-        subgraph cluster_market_data {
-                graph [label="market data"];
-                node [style=filled,
-                        color=white];
-                edge [dir=both];
-                exchange -> aggregator;
-                aggregator -> localport [style=filled, fillcolor=lightgrey, shape=box];
-        }
-        subgraph cluster1 {
-                graph [label=controller,
-                        color=blue];
-                node [style=filled];
-                observer -> controller;
-        }
-        subgraph cluster3 {
-                graph [label="multi thread",
-                        color=red];
-                node [style=filled];
-                database -> multithreadalgo;
-        }
-        subgraph cluster2 {
-                graph [label="event stream",
-                        color=blue];
-                node [style=filled];
-                disruptor -> listener;
-                disruptor -> eventalgo;
-        }
-        subgraph cluster4 {
-                brokers -> trader;
-        }
-        localport -> observer;
-        controller -> localport;
-        localport -> disruptor;
-        disruptor -> controller;
-        disruptor -> observer;
-        controller -> disruptor;
-        listener -> database;
-        eventalgo -> multithreadalgo;
-        controller -> trader;
-        trader -> observer;
-        eventalgo -> controller;
-        multithreadalgo -> controller;
-        observer -> database;
-}
-#+end_src
-
-
-
-
-
-
-* TODO controller
-:LOGBOOK:
-CLOCK: [2013-03-23 Sat 17:00]--[2013-03-23 Sat 17:55] =>  0:55
-:END:
-** Priority tasks:
-
-- [ ] relate to dot code in [[*candidate%20dot][candidate dot]]
-
-  The idea is to /start/ with a dot graph and use this to register each
-  component and the messaging between components.
-  - [ ] register nodes from candidate dot
-  - [ ] register edges (which will use STM or common messaging systems)
-
-The Controller module is both a component of the overall system and is the complete system.
-
-** ControllerTest.hs
-:PROPERTIES:
-:tangle:   haskell/hyperqdev/ControllerTest.hs
-:END:
-
-#+begin_src haskell
-  module ControllerTest 
-  ( importDotFile
-  , importDot
-  , printGraph
-  , nodeList
-  , edgeList
-  ) where
-
-  import Data.GraphViz
-  import Data.GraphViz.Attributes.Complete
-  import Data.GraphViz.Types
-  import qualified Data.Text.Lazy as L
-  import qualified Data.Text.Lazy.IO as I
-  -- import qualified Data.GraphViz.Types.Generalised as G
-  import Data.Graph.Inductive.Graph
-  import qualified Data.Map as Map
-  import Data.Map(Map)
-
-  importDotFile :: FilePath -> IO (DotGraph String)
-  importDotFile f = do
-          dotText <- I.readFile f 
-          return $ parseDotGraph dotText
-
-  importDot :: L.Text -> DotGraph Node
-  importDot s = parseDotGraph s
-
-  printGraph :: DotGraph String -> IO ()
-  printGraph d = do
-          putStrLn $ L.unpack $ printDotGraph d
-          return()
-
-  nodeList :: DotGraph String -> [String]
-  nodeList g = map nodeID $ graphNodes g
-
-  edgeList :: DotGraph String -> [(String,String)]
-  edgeList g =  map (\x -> (fromNode x, toNode x)) $ graphEdges g
-
-  data CompType = Internal 
-                | External
-                deriving Show
-
-  comp :: DotGraph String -> [(String, CompType)]
-  comp g = zip name s where
-       name = map nodeID n
-       s =  map compType $ map nodeAttributes n
-       n = toDotNodes $ nodeInformationClean True g
-
-  toDotNodes :: (Ord n) => NodeLookup n -> [DotNode n]
-  toDotNodes k = map $ (\(n,(_,as)) -> DotNode n as) . Map.assocs k
-
-  dir :: [Attribute] -> DirType
-  dir [] = Forward
-  dir x = 
-      let d = [a | Dir a <- x]
-      in case d of
-         [] -> Forward
-         _ -> head d
-
-  compType :: [Attribute] -> CompType
-  compType [] = Internal
-  compType x = 
-      let d = [a | Shape a <- x]
-      in case d of
-         [] -> Internal
-         [Egg] -> External
-         _ -> Internal
-
-
-  comm :: DotGraph String -> [(String, String, DirType)]
-  comm g = zip3 from to d where 
-       e = edgeInformationClean True g
-       d = map dir $ map edgeAttributes e
-       from = map fromNode e
-       to = map toNode e
-
-  data CommType = Read 
-                | Write
-                deriving Show
-
-
-  commChan :: (String, String, DirType) -> [(String, String, CommType)]
-  commChan (f,t,Both)          = [(f,t,Write)
-                                 ,(f,t,Read)]
-  commChan (f,t,Forward)       = [(f,t,Write)]
-  commChan (f,t,Back)          = [(f,t,Read)]
-  commChan _                   = []
-#+end_src
-
-** edges
-
-#+begin_src haskell
-  import ControllerTest
-  g <- importDotFile "./dot/iqcontroller.dot"
-  map commChan $ comm g 
+#+begin_src dot :file img/iqtest.png :cmdline -Kdot -Tpng :exports both
+  digraph G {
+          node [label="\N"];
+          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+          
+          subgraph cluster_feed {
+                  graph [label="feed control",
+                          color="#909090"];
+                  node [style=filled];
+                  controller;
+                  admin;
+                  controller -> admin [color="#aaaaaa",dir=both]
+          }
+          subgraph cluster_iqport {
+                  graph [label="iqport",
+                          color="#909090"];
+                  adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
+          }
+          
+          admin -> adminport [color="#aaaaaa",dir=both];
+          controller -> marketport [color="#aaaaaa", dir=both];
+          controller -> lookupport [color="#aaaaaa", dir=both];
+          controller -> stdin [color="#aaaaaa", dir=back]
+          controller -> stdout [color="#aaaaaa"]
+  }
 #+end_src
 
 #+results:
-: *ControllerTest Data.GraphViz L I G Data.Graph.Inductive.Graph Data.GraphViz.Attributes.Complete ControllerTest> [[("controller","admin",Write),("controller","admin",Read)],[("admin","adminport",Write),("admin","adminport",Read)],[("controller","marketport",Write),("controller","marketport",Read)],[("controller","lookupport",Write),("controller","lookupport",Read)],[("controller","STDIN",Read)],[("controller","STDOUT",Write)]]
+[[file:img/iqtest.png]]
 
-#+begin_src haskell
-dir :: [Attribute] -> DirType
-dir x = [a | Dir a <- x]
-#+end_src
-
-#+results:
-: <interactive>:209:7: parse error on input `='
-
-
-** nodes
-
-#+begin_src haskell
-import ControllerTest
-import Data.List
-g <- importDotFile "../dot/test.unit2.dot"
-map (\x -> [x]) $ nodeList g
-#+end_src
-
-#+results:
-| aggregator       |
-| broker           |
-| brokeraggregator |
-| controller       |
-| databases        |
-| disruptor        |
-| eventalgo        |
-| exchange         |
-| listener         |
-| localport        |
-| observer         |
-| offwirealgo      |
-| trader           |
-
-
-
-** commandline
-
-#+begin_src sh :results output
-cd ~/projects/hyperq/haskell
-ghc --make Controller.hs
-./Controller
-#+end_src
-
-#+results:
-: nodes:
-: ["aggregator","broker","brokeraggregator","controller","databases","disruptor","eventalgo","exchange","listener","localport","observer","offwirealgo","trader"]
-: connections:
-: [("exchange","aggregator"),("aggregator","localport"),("observer","databases"),("controller","eventalgo"),("disruptor","listener"),("disruptor","eventalgo"),("disruptor","controller"),("controller","disruptor"),("broker","brokeraggregator"),("brokeraggregator","trader"),("localport","observer"),("controller","localport"),("localport","disruptor"),("listener","observer"),("controller","observer"),("controller","trader"),("controller","offwirealgo"),("databases","offwirealgo"),("trader","observer"),("eventalgo","observer"),("offwirealgo","observer")]
 
 
 
@@ -1213,291 +948,7 @@ For a live account:
 wine "Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe" ‑product yourproductid ‑version 0.1 ‑login yourlogin ‑password yourpassword -autoconnect -savelogininfo
 #+end_src
 
-** R interfacing
-
-Using R to read the raw feed proceeds along the following lines:
-
-#+begin_src R
-msg3<-"function=subscribe|item=MI.EQCON.1|schema=last_price;ask;bid" msg4<-"function=unsubscribe" 
-#open socket connection 
-
-socketPointer<-socketConnection('localhost', port=5333, server=FALSE) 
-#subscribe 
-
-writeLines(msg3, socketPointer) 
-#read data from file 
-readLines(con=socketPointer,n=1,ok=TRUE,warn=TRUE,encoding='UTF-8') 
-#unsubscribe 
-
-writeLines(msg4, socketPointer) 
-#close socket 
-
-close(socketPointer)
-
-#+end_src
-
-
-#+begin_src R :session *Rlogon* :results output
-  rm(list = ls())
-  code.startup = system2("wine", "\"Z:\\\\Users\\\\tonyday\\\\wine\\\\iqfeed\\\\iqconnect.exe\"", stdout="", stderr="",wait=FALSE)
-  Sys.sleep(10)
-  socketAdmin=socketConnection('localhost', port=9300, open="a+") 
-  Sys.sleep(1)
-  if (isOpen(socketAdmin)) {
-    response.initial.stream = readLines(socketAdmin)
-    print(response.initial.stream)
-  } else {
-    print("login failed")
-  }
-#+end_src
-
-#+results:
-#+begin_example
-Wine cannot find the FreeType font library.  To enable Wine to
-use TrueType fonts please install a version of FreeType greater than
-or equal to 2.0.5.
-http://www.freetype.org
-Wine cannot find the FreeType font library.  To enable Wine to
-use TrueType fonts please install a version of FreeType greater than
-or equal to 2.0.5.
-http://www.freetype.org
-Wine cannot find the FreeType font library.  To enable Wine to
-use TrueType fonts please install a version of FreeType greater than
-or equal to 2.0.5.
-http://www.freetype.org
-Wine cannot find the FreeType font library.  To enable Wine to
-use TrueType fonts please install a version of FreeType greater than
-or equal to 2.0.5.
-http://www.freetype.org
-Wine cannot find the FreeType font library.  To enable Wine to
-use TrueType fonts please install a version of FreeType greater than
-or equal to 2.0.5.
-http://www.freetype.org
-fixme:heap:HeapSetInformation 0x0 1 0x0 0
-[1] "S,STATS,66.112.156.222,60003,500,0,1,0,0,0,Mar 12 5:53AM,Mar 12 5:53AM,Connected,5.0.0.9,414096,0.17,0.02,0.03,0.00,0.0,0.00,"
-#+end_example
-
-
-
-R sucks at asynchronous programming.
-
-
 ** NEXT haskell interfacing
-
-*** Feed
-:PROPERTIES:
-:tangle:   haskell/hyperqdev/Feed.hs
-:END:
-
-no automation or control yet
-- all incoming data gets written to a file specified in args
-- input via stdin
-
-To compile and run:
-
-#+begin_src sh :results output :tangle no
-cd haskell/hyperqdev
-ghc --make Feed.hs threaded
-./Feed data.out
-#+end_src
-
-#+begin_src haskell
-  import Control.Concurrent
-  import Network
-  import System.Environment
-  import System.Process
-  import System.IO
-  import Control.Exception
-  import System.Exit
-  import Control.Monad (forever)
-  import Data.Time.Clock
-  import Data.Time.Format
-  import Data.Time.Calendar
-  import System.Locale
-  
-  
-  con :: String -> String -> IO ()
-  con host port = do
-      h <- connectTo host $ PortNumber $ toEnum $ read port
-      hSetBuffering stdout LineBuffering
-      hSetBuffering h      LineBuffering
-      done <- newEmptyMVar
-  
-      _ <- forkIO $ (hGetContents h >>= putStr)
-                  `finally` tryPutMVar done ()
-  
-      _ <- forkIO $ (getContents >>= hPutStr h)
-                  `finally` tryPutMVar done ()
-  
-                  -- Wait for at least one of the above threads to complete
-      takeMVar done
-  
-  conFileTime :: String -> String -> String -> IO ()
-  conFileTime host port file = do
-      h <- connectTo host $ PortNumber $ toEnum $ read port
-      f <- openFile file WriteMode
-      hSetBuffering stdout LineBuffering
-      hSetBuffering h      LineBuffering
-      hSetBuffering f      LineBuffering
-      done <- newEmptyMVar
-  
-      _ <- forkIO $ forever (do
-                          t <- getCurrentTimeString
-                          st <- hGetLine h
-                          hPutStrLn f $ t ++ "," ++ st)
-                  `finally` tryPutMVar done ()
-  
-      _ <- forkIO $ (getContents >>= hPutStr h)
-                  `finally` tryPutMVar done ()
-  
-                  -- Wait for at least one of the above threads to complete
-      takeMVar done
-  
-  conAdmin :: String -> IO ()
-  conAdmin cmds = do
-    con "localhost" "9300"
-    putStr cmds
-  
-  conStream :: String -> IO ()
-  conStream cmds = do
-    con "localhost" "5009"
-    putStr cmds
-  
-  conLookup :: String -> IO ()
-  conLookup cmds = do
-    con "localhost" "9100"
-    putStr cmds
-  
-  logon :: IO ()
-  logon = do
-    let cmd = "wine"
-        args = ["Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe", "-product IQFEED_DEMO -version 1"]
-    _ <- rawSystem cmd args
-    return()
-  
-  
-  getCurrentTimeString :: IO String
-  getCurrentTimeString = do
-     now <- getCurrentTime
-     let offset = diffUTCTime  (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)) (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime (4 * 60 * 60)))
-     return (formatTime defaultTimeLocale "%H:%M:%S%Q" $ addUTCTime offset now)
-  
-  
-  main :: IO ExitCode
-  main = do
-    [file] <- getArgs
-    _ <- forkIO (logon)
-    threadDelay $ 1000000 * 10
-    putStr "\ndelay finished\n"
-    conFileTime "localhost" "5009" file
-    return(ExitSuccess)
-#+end_src
-
-*** Hyperq.Iqconnect
-:PROPERTIES:
-:tangle:   haskell/Hyperq/Iqconnect.hs
-:END:
-
-#+begin_src haskell :tangle haskell/Hyperq/Iqconnect.hs
-module Hyperq.Iqconnect where 
-
-import Control.Concurrent
-import Network
-import System.Process
-import System.IO
-import Control.Exception
-import Control.Monad (forever)
-import Data.Time.Clock
-import Data.Time.Format
-import Data.Time.Calendar
-import System.Locale
-
-con :: String -> String -> IO ()
-con host port = do
-    h <- connectTo host $ PortNumber $ toEnum $ read port
-    hSetBuffering stdout LineBuffering
-    hSetBuffering h      LineBuffering
-    done <- newEmptyMVar
-
-    _ <- forkIO $ (hGetContents h >>= putStr)
-                `finally` tryPutMVar done ()
-
-    _ <- forkIO $ (getContents >>= hPutStr h)
-                `finally` tryPutMVar done ()
-
-                -- Wait for at least one of the above threads to complete
-    takeMVar done
-
-conFileTime :: String -> String -> String -> IO ()
-conFileTime host port file = do
-    h <- connectTo host $ PortNumber $ toEnum $ read port
-    f <- openFile file WriteMode
-    hSetBuffering stdout LineBuffering
-    hSetBuffering h      LineBuffering
-    hSetBuffering f      LineBuffering
-    done <- newEmptyMVar
-
-    _ <- forkIO $ forever (do
-                        t <- getCurrentTimeString
-                        st <- hGetLine h
-                        hPutStrLn f $ t ++ "," ++ st)
-                `finally` tryPutMVar done ()
-
-    _ <- forkIO $ (getContents >>= hPutStr h)
-                `finally` tryPutMVar done ()
-
-                -- Wait for at least one of the above threads to complete
-    takeMVar done
-
-conAdmin :: String -> IO ()
-conAdmin cmds = do
-  con "localhost" "9300"
-  putStr cmds
-
-conStream :: String -> IO ()
-conStream cmds = do
-  con "localhost" "5009"
-  putStr cmds
-
-conLookup :: String -> IO ()
-conLookup cmds = do
-  con "localhost" "9100"
-  putStr cmds
-
-logon :: IO ()
-logon = do
-  let cmd = "wine"
-      args = ["Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe", "-product IQFEED_DEMO -version 1"]
-  _ <- rawSystem cmd args
-  return()
-
-
-getCurrentTimeString :: IO String
-getCurrentTimeString = do
-   now <- getCurrentTime
-   let offset = diffUTCTime  (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime 0)) (UTCTime (ModifiedJulianDay 0) (secondsToDiffTime (4 * 60 * 60)))
-   return (formatTime defaultTimeLocale "%H:%M:%S%Q" $ addUTCTime offset now)
-#+end_src
-
-*** Iqtest
-
-#+begin_src haskell :tangle haskell/test/Iqtest.hs
-import Control.Concurrent
-import System.Environment
-import System.Exit
-import Hyperq.Iqconnect
-
-main :: IO ExitCode
-main = do
-  [file] <- getArgs
-  _ <- forkIO (logon)
-  threadDelay $ 1000000 * 10
-  putStr "\ndelay finished\n"
-  conFileTime "localhost" "5009" file
-  return(ExitSuccess)
-#+end_src
-
-
 *** NEXT Iqtest development
 SCHEDULED: <2013-06-03 Mon>
 :LOGBOOK:
@@ -1506,48 +957,6 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
 :PROPERTIES:
 :tangle:   haskell/hyperqdev/Iqtest.hs
 :END:
-
-- [ ] set up testing harness
-    - [ ] dot of schema
-    - [ ] setup travis
-
-
-**** dot
-:PROPERTIES:
-:tangle:   dot/iqcontroller.dot
-:END:
-
-#+begin_src dot :file img/iqtest.png :cmdline -Kdot -Tpng :exports both
-  digraph G {
-          node [label="\N"];
-          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
-          
-          subgraph cluster_feed {
-                  graph [label="feed control",
-                          color="#909090"];
-                  node [style=filled];
-                  controller;
-                  admin;
-                  controller -> admin [color="#aaaaaa",dir=both]
-          }
-          subgraph cluster_iqport {
-                  graph [label="iqport",
-                          color="#909090"];
-                  adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
-                  marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
-                  lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
-          }
-          
-          admin -> adminport [color="#aaaaaa",dir=both];
-          controller -> marketport [color="#aaaaaa", dir=both];
-          controller -> lookupport [color="#aaaaaa", dir=both];
-          controller -> stdin [color="#aaaaaa", dir=back]
-          controller -> stdout [color="#aaaaaa"]
-  }
-#+end_src
-
-#+results:
-[[file:img/iqtest.png]]
 
 **** dev notes
 - things that need to be (step 1)
@@ -1640,353 +1049,6 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
     - workerPool
     - manager (connection management)
     - main
-
-**** register
-
-***** channels
-
-#+begin_src haskell
-  import ControllerTest
-  g <- importDotFile "./dot/iqcontroller.dot"
-  map commChan $ comm g 
-#+end_src
-
-#+results:
-| (controller admin Write)      | (controller admin Read)      |
-| (admin adminport Write)       | (admin adminport Read)       |
-| (controller marketport Write) | (controller marketport Read) |
-| (controller lookupport Write) | (controller lookupport Read) |
-| (controller stdin Read)       |                              |
-| (controller stdout Write)     |                              |
-
-***** components
-
-#+begin_src haskell
-  import ControllerTest
-  g <- importDotFile "./dot/iqcontroller.dot"
-  comp g 
-#+end_src
-
-#+results:
-| admin      | Internal |
-| adminport  | External |
-| controller | Internal |
-| lookupport | External |
-| marketport | External |
-| stdin      | Internal |
-| stdout     | Internal |
-
-
-
-
-
-
-**** echo-test
-components
-- cStdin 
-    - reads from stdin
-    - sequences to cController<-cStdin
-- cController
-    - consumes from cController<-cStdin
-    - sequences to cStdout<-cController
-- cStdout
-    - consumes from cStdout<-cController
-    - writes to stdout
-
-
-***** dot
-:PROPERTIES:
-:tangle:   dot/echo-test.dot
-:END:
-
-#+begin_src dot :file img/echo-test.png :cmdline -Kdot -Tpng :exports both
-  digraph G {
-          node [label="\N"];
-          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
-          controller -> stdin [color="#aaaaaa", dir=back]
-          controller -> stdout [color="#aaaaaa"]
-  }
-#+end_src
-
-#+results:
-[[file:img/echo-test.png]]
-
-***** buffers
-
-#+begin_src haskell
-  import ControllerTest
-  g <- importDotFile "./dot/echo-test.dot"
-  buffs g
-#+end_src
-
-#+results:
-: fromList [("controller",["stdout"]),("stdin",["controller"])]
-
-
-
-
-
-*** background workers
-
-http://www.haskell.org/haskellwiki/Background_thread_example
-
-http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/index.htm
-
-
-
-- [X] understand stm operations
-- [ ] create x components
-    - a component has:
-      - maybe an emitter (is this a writer?)
-      - maybe a receiver (is this a reader)
-      - maybe a fn(receiver) = emission
-    - [ ] work out which has which from dot
-    - [ ] fake producers (for relevant components)
-- [ ] create readers and writers
-    - [ ] writers (producers) need consumers?
-
-
-*** latency research
-
-I collected trade and order ticks for 12 contracts on 14th March from iqfeed,
-and timestamped each tick with current system time. There are two different
-potential points at which to measure latency:
-- iqfeed sends a ping every second, and
-- each quote has a relevant market timestamp to the millisecond
-
-**** feed ping latency
-  
-From the raw iqfeed heartbeat:
-
-    #+begin_src R
-      t = read.csv("data/streamt.txt",header=FALSE,as.is=TRUE)
-      pingtime = strptime(t[,3], "%Y%m%d %H:%M:%S")
-      stamp = strptime(paste(strftime(pingtime,"%Y%m%d"), t[,1], sep=" "), "%Y%m%d %H:%M:%OS")    
-      latency = as.double(stamp - pingtime)
-      df = data.frame(pingtime=pingtime, latency=latency)
-      summary(df)
-    #+end_src
-
-    #+results:
-    | Min.   :2013-03-14 07:30:57 | Min.   :-0.90665 |
-    | 1st Qu.:2013-03-14 17:15:41 | 1st Qu.:-0.01492 |
-    | Median :2013-03-15 03:02:15 | Median : 0.14950 |
-    | Mean   :2013-03-15 03:01:28 | Mean   : 0.38876 |
-    | 3rd Qu.:2013-03-15 12:46:33 | 3rd Qu.: 0.22824 |
-    | Max.   :2013-03-15 22:33:24 | Max.   : 7.89887 |
-    | NA's   :1                   | NA's   :1        |
-
-    #+begin_src R
-    require(ggplot2)
-    qplot(data=df, x=pingtime, y=latency)
-    ggsave("ping-latency.svg")
-    #+end_src
-
-    #+results:
-
-    [[file:data/ping-latency.svg]]
-
-    The simple scatterplot shows many negative values, especially when the
-    market is open, and a step jump in the later pings (when no quotes were
-    being recorded).  These jumps may be due to changes in my system clock
-    (automatic appletime resolutions) or due to a lack of accuracy in the
-    iqfeed pings.
-
-    Scatterplots tend to provide dubious visualisation for bigdata, and a new
-    package out that helps is [[http://vita.had.co.nz/papers/bigvis.html][bigvis]].
-
-    bigvis is not yet available at CRAN but can be installed via a github
-    repository (see https://github.com/hadley/bigvis for details).
-
-    #+begin_src R
-    install.packages("devtools")
-    devtools::install_github("bigvis")
-    #+end_src
-
-    bigvis doesn't handle non-numeric data (like time), so rather than
-    autopilot, I use ggplot directly.   
-
-    #+begin_src R :results file
-      require(bigvis)
-      require(ggplot2)
-      dfn = condense(bin(as.double(df$pingtime),60),bin(df$latency,.1))
-      dfg = data.frame(as.POSIXct(dfn[,1],origin="1960-01-01", tz="GMT"),dfn[,2],dfn[,3])
-      colnames(dfg) = c("Time","Latency","Count")
-      g = ggplot(data=dfg,aes(x=Time,y=Latency))
-      g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548") + scale_y_continuous(limits=c(-1,1))
-      ggsave("img/ping-latency-condensed.png")
-   #+end_src
-
-   [[file:img/ping-latency-condensed.png]]
-
-   Using the bigvis techniques clarifies a few main issues for further research:
-   - there is a step jump near market open where the majority of the pings
-     jump from around 250 msecs to -750 msecs. This looks like either a coding
-     error or the ping being off by up to a second.
-   - during market open (when tick volume is high) ping can vary by a second.
-   
-
-
-**** disconnects
-   Just looking at the ping counts after binning into one minute intervals:
-   
-   #+begin_src R
-      df.dis = condense(bin(as.double(df$pingtime),60))
-      dfg = data.frame(as.POSIXct(df.dis[,1],origin="1960-01-01", tz="GMT"),60-df.dis[,2])
-      colnames(dfg) = c("Time","Count")
-      g = ggplot(data=dfg,aes(x=Time,y=Count))
-      g + geom_line(aes())
-      ggsave("img/disconnects.png")
-
-   #+end_src
-
-   [[file:img/disconnects.png]]
-
-   iqfeed regularly suffers from disconnects with reconnection occuring within
-   a minute.
-
-
-**** event latency
-
-from the R database of the one day quote ticks...
-
-- open data
-  #+begin_src R
-  
-  rm(list = ls())
-  require("mmap")
-  require("rindex")
-  require("plyr")
-  require("stringr")
-  raw.stream = "streamqh"
-  # where the mmap db is located
-  db.path = paste("data/",raw.stream,"/",sep="")
-  
-  load(paste(db.path,".Rdbinfo",sep=""))
-  #m = mmap(main.filename, mode=st)
-  stream = NULL
-  stream$stamp = mmap(paste(db.path,fields[1],".data",sep=""), mode=double())
-  stream$code = mmap(paste(db.path,fields[2],".data",sep=""), mode=char(1))
-  stream$symbol = mmap(paste(db.path,fields[3],".data",sep=""), mode=char(ticker.length))
-  stream$trade = mmap(paste(db.path,fields[4],".data",sep=""), mode=double())
-  stream$vol = mmap(paste(db.path,fields[5],".data",sep=""), mode=integer())
-  stream$tradetime = mmap(paste(db.path,fields[6],".data",sep=""), mode=double())
-  stream$tradeex = mmap(paste(db.path,fields[7],".data",sep=""), mode=double())
-  stream$volex = mmap(paste(db.path,fields[8],".data",sep=""), mode=integer())
-  stream$tradetimeex = mmap(paste(db.path,fields[9],".data",sep=""), mode=double())
-  stream$voltot = mmap(paste(db.path,fields[10],".data",sep=""), mode=integer())
-  stream$bid = mmap(paste(db.path,fields[11],".data",sep=""), mode=double())
-  stream$bidvol = mmap(paste(db.path,fields[12],".data",sep=""), mode=integer())
-  stream$bidtime = mmap(paste(db.path,fields[13],".data",sep=""), mode=double())
-  stream$ask = mmap(paste(db.path,fields[14],".data",sep=""), mode=double())
-  stream$askvol = mmap(paste(db.path,fields[15],".data",sep=""), mode=integer())
-  stream$asktime = mmap(paste(db.path,fields[16],".data",sep=""), mode=double())
-  stream$event = mmap(paste(db.path,fields[17],".data",sep=""), mode=char(12))
-  stream$id = mmap(paste(db.path,fields[18],".data",sep=""), mode=integer())
-  
-  #+end_src
-
-  #+results:
-
-
-- Define events and extract relevant times
-  #+begin_src R
-  n = length(stream$event[])
-  
-  tC = grepl("C",stream$event[])
-  tO = grepl("O",stream$event[])
-  ta = grepl("a",stream$event[])
-  tb = grepl("b",stream$event[])
-  ta = ta & !(tC | tO)
-  tb = tb & !(tC | tO | ta)
-  tother = !(ta | tb | tC | tO)
-  
-  event.category = (1 * tC) + (2 * tO) + (3 * ta) + (4 * tb) + (5 * tother)
-  
-  event.time = (stream$tradetime[] * tC +
-          stream$tradetimeex[] * tO +
-          stream$asktime[] * ta +
-          stream$bidtime[] * tb +
-          stream$tradetime[] * tother)
-  
-  event.time.posix = as.POSIXct(event.time,origin="1960-01-01", tz="GMT")
-  event.stamp = stream$stamp[]
-  
-  event.latency = event.stamp - event.time  
-  
-  event.df = data.frame(symbol=stream$symbol[],event.category,event.time, event.stamp, event.latency)
-  summary(event.df)
-  #+end_src
-
-  #+results:
-  | @ESM13 :2553308 | Min.   :1.000 | Min.   :1.366e+09 | Min.   :1.366e+09 | Min.   :-85800.76 |
-  | @NQM13 :1285545 | 1st Qu.:3.000 | 1st Qu.:1.366e+09 | 1st Qu.:1.366e+09 | 1st Qu.:     0.22 |
-  | @YMM13 :1216006 | Median :3.000 | Median :1.366e+09 | Median :1.366e+09 | Median :     0.33 |
-  | EBK13  : 917275 | Mean   :3.107 | Mean   :1.366e+09 | Mean   :1.366e+09 | Mean   :   226.44 |
-  | @JYM13 : 844995 | 3rd Qu.:4.000 | 3rd Qu.:1.366e+09 | 3rd Qu.:1.366e+09 | 3rd Qu.:   600.22 |
-  | EBM13  : 610827 | Max.   :5.000 | Max.   :1.366e+09 | Max.   :1.366e+09 | Max.   :  9818.25 |
-  | (Other):1373320 | nil           | nil               | nil               | nil               |
-
-- bigvis manipulations
-  #+begin_src R
-  require("bigvis")
-  require("ggplot2")
-  df1 = condense(bin(event.df$event.time,60),bin(event.df$event.latency,0.05))
-  df2 = df1[(df1$event.df.event.latency > 0) & (df1$event.df.event.latency < 1),]   
-  dfg = data.frame(as.POSIXct(df2[,1]+10*60*60,origin="1960-01-01", tz=""),df2[,2],df2[,3])
-  colnames(dfg) = c("Time","Latency","Count")
-  g = ggplot(data=dfg,aes(x=Time,y=Latency))
-  g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548") + scale_y_continuous(limits=c(-1,1))
-  ggsave("img/quote-latency-condensed.svg")
-
-  #+end_src
-
-  #+results:
-
-  [[file:img/quote-latency-condensed.svg]]
-
-  Unlike the iqfeed ping, there is a consistent latency pattern when comparing
-  market stamp and local system stamp, with no spurious negative values.
-
-- symbols
-
-  #+begin_src R :results output
-  summary(as.factor(stream$symbol[]))
-  #+end_src
-
-  #+results:
-  : +SK13   +SPH13  @EDM13  @EDU13  @ESH13  @ESM13  @F1M13  @JYM13  @N1M13  @NQM13  
-  :  299398     108  120731  167649  273192 2553308   27715  844995   27357 1285545 
-  : @T1M13  @USNM13 @VMJ13  @YMM13  CRDJ13  EBK13   EBM13   
-  :    1524   54804    3146 1216006  397696  917275  610827
-
-- emini latency
-  #+begin_src R
-    ind.emini = indexEQ(ind.symbol,"@ESM13 ")
-    df1 = condense(bin(event.df$event.time[ind.emini],600),bin(event.df$event.latency[ind.emini],0.05))
-    df2 = df1[(df1$event.df.event.latency > -1) & (df1$event.df.event.latency < 10),]   
-    dfg = data.frame(as.POSIXct(df2[,1]+10*60*60,origin="1960-01-01", tz=""),df2[,2],df2[,3])
-    colnames(dfg) = c("Time","Latency","Count")
-    g = ggplot(data=dfg,aes(x=Time,y=Latency))
-    g + geom_tile(aes(fill=Count)) + scale_fill_gradient(low="#e5e5e5", high = "#444548") + scale_y_continuous(limits=c(-1,1))
-    ggsave("img/quote-latency-condensed-emini.svg")
-  #+end_src
-
-- average latency (with binning)
-  #+begin_src R
-    require(ggplot2)
-    require(bigvis)
-    ind.emini = indexEQ(ind.symbol,"@ESM13 ")
-    df1 = condense(bin(event.df$event.time[ind.emini],300,name="time"),bin(event.df$event.latency[ind.emini],0.05,name="latency"))
-    df2 = df1[(df1$latency > 0) & (df1$latency < 2),]
-    lat.av = tapply(df2$latency*df2$.count,df2$time,sum)/tapply(df2$.count,df2$time,sum)
-    dfg = data.frame(Time=as.POSIXct(as.double(row.names(lat.av))+10*60*60,origin="1960-01-01", tz=""),Latency=lat.av)
-    #colnames(dfg) = c("Time","Latency","Count")
-    g = ggplot(data=dfg,aes(x=Time,y=Latency))
-    g + geom_point()
-    ggsave("img/quote-latency-averagecondensed.svg")
-  #+end_src
-
 
 ** Latency Research                                               :research:
 CLOSED: [2013-04-12 Thu 16:46]
@@ -2233,18 +1295,6 @@ From the R database of the one day quote ticks...
 
   [[file:assets/quote-latency-averagecondensed.svg]]
 
-
-
-
-** April23
-
-Hacking around with the April 23 data
-- [ ] create module from Feed code
-  [[http://www.haskell.org/tutorial/modules.html][A Gentle Introduction to Haskell: Modules]]
-
-- [ ] level 1 historical tick data download
-- [ ] level 2 ticks
-- [ ] timestamp for first twitter post
 
 
 
@@ -2880,6 +1930,7 @@ http://www.bnosac.be/index.php/blog/26-massive-online-data-stream-mining-with-r
 
 
 
+
 * algo
 
 There's a few hypotheses guilding the evolution of the algorithm design:
@@ -3181,7 +2232,7 @@ of the proposed system design.
 
 
 
-** TODO Signal Prediction                                                :R:
+** Signal Prediction                                                     :R:
 [2013-04-22 Mon 17:12] 
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2013-04-22 Mon 17:12]
@@ -4651,130 +3702,6 @@ Ways to perform forecasting
 
 
 
-* event stream engineering
-** disruptor
-
-The disruptor scheme is at the center of many peoples thinking about
-low-latency and process design for HFT, and the benchmark for cutting-edge low-latency.
-
-The key concepts (and this is a lame list to get started - please read the
-references) include:
-
-- the disruptor is a queue designed with the idea that queues are most often
-  empty or full. The queue is a cyclical array (called a ring buffer) with a
-  buffer size equal to a power of 2.
-- (often) having a single writer (called producer) to avoid cache line contention
-- multiple readers (consumers) that have dependency relationships with each
-  other with these dependencies known to the queue.
-- checks (memory barriers) simply guarding queue over- and under- runs (producers
-  getting too far ahead or consumers being too fast)
-- polling information (on producers and consumers) via the queue.  Recent
-  post og the groups suggest consumer polling might be better. 
-- achieving lock-free concurrency via producer separation and consumer
-  tracking (called the consumer cursor)
-- avoids (L2?) cache misses with variable padding
-- in recent times, the 'worker pool' is leading to large performance
-  gains (I don't know what it is exactly - just repeating the group
-  discussions)
-
-I'd be interested in feedback on porting these concepts to haskell:
-- I don't see anything in hackage remotely similar, but I do see plenty of
-  comparable concepts like cache-miss avoidance, STM worker pools etc etc. 
-- this would provide quite a good reference for how much slower haskell is
-  compared with imperative-style methods.
-- (for me), the translation of the concepts to haskell is difficult.  So much
-  of the disruptor design pattern is imperative (do this exactly given system
-  architecture). Thinking in terms of promises and 'what is' may lead to a
-  very different look and feel, and good insight as to the differences
-  haskell brings to the problem domain.
-- I suspect that haskell could start to perform very well when there are
-  multiple writers (producers) and when there are a large number of
-  interdependent readers (consumers). I have zero proof of this - just a gut
-  feel.
-- if there is a need to get closer to the metal than haskell can offer, it's
-  best to find this out now and understand why. In this case I imagine the
-  disruptor as a language-independent messaging solution superior to Protocol Buffers.
-
-
-A few references to help:
-
-Active info/code hubs
-
-Main project
-[[https://github.com/LMAX-Exchange/disruptor]]
-http://lmax-exchange.github.io/disruptor/
-
-Collections
-https://github.com/LMAX-Exchange/LMAXCollections
-
-Interesting OSS using disruptor
-http://storm-project.net/
-
-Clojure Library and DSL
-http://userevents.github.io/phaser/
-
-Blogs
-http://blogs.lmax.com/
-
-Martin Thompson blog
-http://mechanical-sympathy.blogspot.co.uk/
-
-Michael Barker blog
-http://bad-concurrency.blogspot.com.au
-
-
-Less active/reference
-
-https://github.com/fsaintjacques/disruptor--
-Performance in C++ is way down compared to main java repo.
-
-Main technical Doc (2 years old now)
-https://github.com/LMAX-Exchange/disruptor/tree/master/docs
-
-trisha's posts
-
-http://mechanitis.blogspot.com.au/2011/06/dissecting-disruptor-whats-so-special.html
-
-Original Martin Fowler piece
-[[http://martinfowler.com/articles/lmax.html][Martin Fowler]]
-
-
-
-
-
-** messaging
-
-
-http://msgpack.org/
-
-[[http://code.google.com/p/protobuf-net/][Protocol Buffers]] 
-[[https://code.google.com/p/quickfast/][FAST]] 
-[[http://activequant.org/svn/aq2o/trunk/base/src/main/proto/messages.proto][ActiveQuant Google Protocol Buffer example]]
-
-http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
-
-http://programmers.stackexchange.com/questions/121592/what-to-look-for-in-selecting-a-language-for-algorithmic-high-frequency-trading
-
-http://stackoverflow.com/questions/731233/activemq-or-rabbitmq-or-zeromq-or
-
-http://wiki.msgpack.org/pages/viewpage.action?pageId=1081387
-
-http://kenai.com/downloads/javafx-sam/EventProcessinginAction.pdf
-
-*** esper
-
-http://coffeeonesugar.wordpress.com/2009/07/21/getting-started-with-esper-in-5-
-minutes/
-
-
-
-*** haskell
-http://community.haskell.org/~simonmar/par-tutorial.pdf
-
-
-* logger/observer
-* trader
-** TODO connect with IB
 
 * gh-pages production
 
@@ -4969,6 +3896,7 @@ limitations under the License.</p>
 
 
 
+
 * references
 ** articles
 
@@ -5022,14 +3950,32 @@ https://github.com/andykent/river
 http://www.quickfixengine.org/quickfix/doc/html/about.html
   major broker API
 
-* clipboard
-** time
-
-http://apple.stackexchange.com/questions/82878/how-to-tell-when-time-has-been-synced-with-ntp-server-in-mac-os-x-lion
+** messaging
 
 
+http://msgpack.org/
 
-** notes from HN discussions
+[[http://code.google.com/p/protobuf-net/][Protocol Buffers]] 
+[[https://code.google.com/p/quickfast/][FAST]] 
+[[http://activequant.org/svn/aq2o/trunk/base/src/main/proto/messages.proto][ActiveQuant Google Protocol Buffer example]]
+
+http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
+
+http://programmers.stackexchange.com/questions/121592/what-to-look-for-in-selecting-a-language-for-algorithmic-high-frequency-trading
+
+http://stackoverflow.com/questions/731233/activemq-or-rabbitmq-or-zeromq-or
+
+http://wiki.msgpack.org/pages/viewpage.action?pageId=1081387
+
+http://kenai.com/downloads/javafx-sam/EventProcessinginAction.pdf
+
+http://coffeeonesugar.wordpress.com/2009/07/21/getting-started-with-esper-in-5-
+minutes/
+
+
+
+** links to HN discussions
+
 https://news.ycombinator.com/item?id=5550930
 
 http://prof7bit.github.io/goxtool/
@@ -5042,7 +3988,92 @@ https://github.com/brotchie/r-zerotws
 
 http://hackage.haskell.org/package/HLearn-algebra
 
-
-
-** bitcoin
 http://bitcoin.clarkmoody.com/
+
+** disruptor
+
+The disruptor scheme is at the center of many peoples thinking about
+low-latency and process design for HFT, and the benchmark for cutting-edge low-latency.
+
+The key concepts (and this is a lame list to get started - please read the
+references) include:
+
+- the disruptor is a queue designed with the idea that queues are most often
+  empty or full. The queue is a cyclical array (called a ring buffer) with a
+  buffer size equal to a power of 2.
+- (often) having a single writer (called producer) to avoid cache line contention
+- multiple readers (consumers) that have dependency relationships with each
+  other with these dependencies known to the queue.
+- checks (memory barriers) simply guarding queue over- and under- runs (producers
+  getting too far ahead or consumers being too fast)
+- polling information (on producers and consumers) via the queue.  Recent
+  post og the groups suggest consumer polling might be better. 
+- achieving lock-free concurrency via producer separation and consumer
+  tracking (called the consumer cursor)
+- avoids (L2?) cache misses with variable padding
+- in recent times, the 'worker pool' is leading to large performance
+  gains (I don't know what it is exactly - just repeating the group
+  discussions)
+
+I'd be interested in feedback on porting these concepts to haskell:
+- I don't see anything in hackage remotely similar, but I do see plenty of
+  comparable concepts like cache-miss avoidance, STM worker pools etc etc. 
+- this would provide quite a good reference for how much slower haskell is
+  compared with imperative-style methods.
+- (for me), the translation of the concepts to haskell is difficult.  So much
+  of the disruptor design pattern is imperative (do this exactly given system
+  architecture). Thinking in terms of promises and 'what is' may lead to a
+  very different look and feel, and good insight as to the differences
+  haskell brings to the problem domain.
+- I suspect that haskell could start to perform very well when there are
+  multiple writers (producers) and when there are a large number of
+  interdependent readers (consumers). I have zero proof of this - just a gut
+  feel.
+- if there is a need to get closer to the metal than haskell can offer, it's
+  best to find this out now and understand why. In this case I imagine the
+  disruptor as a language-independent messaging solution superior to Protocol Buffers.
+
+
+A few references to help:
+
+Active info/code hubs
+
+Main project
+[[https://github.com/LMAX-Exchange/disruptor]]
+http://lmax-exchange.github.io/disruptor/
+
+Collections
+https://github.com/LMAX-Exchange/LMAXCollections
+
+Interesting OSS using disruptor
+http://storm-project.net/
+
+Clojure Library and DSL
+http://userevents.github.io/phaser/
+
+Blogs
+http://blogs.lmax.com/
+
+Martin Thompson blog
+http://mechanical-sympathy.blogspot.co.uk/
+
+Michael Barker blog
+http://bad-concurrency.blogspot.com.au
+
+
+Less active/reference
+
+https://github.com/fsaintjacques/disruptor--
+Performance in C++ is way down compared to main java repo.
+
+Main technical Doc (2 years old now)
+https://github.com/LMAX-Exchange/disruptor/tree/master/docs
+
+trisha's posts
+
+http://mechanitis.blogspot.com.au/2011/06/dissecting-disruptor-whats-so-special.html
+
+Original Martin Fowler piece
+[[http://martinfowler.com/articles/lmax.html][Martin Fowler]]
+
+
