@@ -274,7 +274,6 @@ Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
 SCHEDULED: <2013-06-10 Mon>
 
 
-- [ ] remove haskelly code blocks
 - [ ] travis
      data-ringbuffer will require separate build as follows:
 

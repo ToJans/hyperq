@@ -1,7 +1,6 @@
+[![Build Status](https://secure.travis-ci.org/hyperq/hyperq.png)](http://travis-ci.org/hyperq/hyperq)
 
-<!-- [[file:~/projects/hyperq/hyperq.org::*README.md][README\.md:1]] -->
-
-<img src="http://hyperq.github.io/assets/hyper-blue.png" width="100px">
+http://hyperq.github.io/assets/hyper-blue.png
 
 [Main Site](http://hyperq.github.io)
 
@@ -9,9 +8,17 @@ hyperq is a small project with a big ambition. We aim to build the worlds best
 algorithmic trading platform using the best off-the-shelf open source
 technology stack to be found.
 
-## Quick start
+## Build
 
-There is no quick start for hyperq yet (help us create one!). The easiest way to
+```sh
+$ # build the library and tests
+$ cabal configure --enable-tests
+$ cabal build
+$ # run the benchmarks
+$ cabal test
+```
+
+Beyond building the haskell code, the easiest way to
 get up to speed is to read the project [blog](http://hyperq.github.io/blog). If
 you're interested in contributing to development or find a logic bug, then
 fork me with:
@@ -21,6 +28,10 @@ $ git clone https://github.com/hyperq/hyperq.git
 ```
 
 ## News
+
+12 June, 2013
+
+Moved to haskell-centric design
 
 25 April, 2013
 
@@ -80,5 +91,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-<!-- README\.md:1 ends here -->
