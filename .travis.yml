@@ -1,6 +1,9 @@
 language: haskell
-install:  cabal install --only-dependencies --enable-tests
-script:   cabal configure --enable-tests && cabal build && cabal test
+install:  
+ - cd data-ringbuffer
+ - cabal install --only-dependencies
+ - cd ..
+ - cabal install --only-dependencies --enable-tests
 notifications:
   email:
     - tonyday567@gmail.com
