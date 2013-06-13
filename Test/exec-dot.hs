@@ -1,6 +1,8 @@
 import System.Environment
-import qualified Dot
--- ./cabal-dev/bin/dot dot/iqcontroller.dot 
+    ( getArgs )
+import qualified Hyperq.Dot as Dot
+-- | usage 
+-- $ ./cabal-dev/bin/dot dot/iqcontroller.dot 
 
 main :: IO ()
 main = do

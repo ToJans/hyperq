@@ -1,7 +1,11 @@
 import Control.Concurrent
+    ( forkIO, threadDelay )
 import System.Environment
+    ( getArgs )
 import System.Exit
-import Hyperq.Iqconnect
+    ( ExitCode(..) )
+import Hyperq.IqFeed
+    ( logon, conFileTime )
 
 -- $ ./cabal-dev/bin/iq "test.txt"
 

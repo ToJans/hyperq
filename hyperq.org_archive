@@ -980,3 +980,115 @@ http://apple.stackexchange.com/questions/82878/how-to-tell-when-time-has-been-sy
 :ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
 :ARCHIVE_CATEGORY: hyperq
 :END:
+
+** travis repo insertion
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:33
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_CATEGORY: hyperq
+:END:
+     data-ringbuffer will require separate build as follows:
+
+     git clone http://github.com/simonmichael/hledger.git
+     cd hledger
+     cabal update
+     cabal install ./hledger-lib ./hledger [./hledger-web]
+
+     http://hledger.org/INSTALL.html
+
+** sornette
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:35
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_OLPATH: references/algo
+:ARCHIVE_CATEGORY: hyperq
+:END:
+
+http://arxiv.org/find/all/1/all:+sornette/0/1/0/all/0/1
+
+some specific articles
+
+http://arxiv.org/pdf/cond-mat/0301543.pdf
+http://arxiv.org/pdf/1108.0077.pdf
+http://arxiv.org/ftp/arxiv/papers/1012/1012.4118.pdf
+http://arxiv.org/pdf/1011.2882.pdf
+http://arxiv.org/pdf/1007.2420.pdf
+http://arxiv.org/pdf/0909.1007.pdf
+http://arxiv.org/ftp/arxiv/papers/0812/0812.2449.pdf
+http://arxiv.org/pdf/0909.1007.pdf
+
+** existing design choice
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:41
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_OLPATH: project design
+:ARCHIVE_CATEGORY: hyperq
+:END:
+
+The typical system platform choices for the aspiring fast trader can be boiled down
+to a few options:
+
+- pure HFT
+  
+  Proprietary real-time event processing that almost has to be in a language with no garbage
+  collection (C, C++ or Java) to avoid millisec delays (ie low
+  latency processes).
+  - dedicated co-located servers
+  - real-time order book analytics
+  - real-time price information streams 
+  - algorithms 'hard-wired'
+
+- Big Data 
+
+  A statistical R&D undertaking using matlab, R, julia and fast database
+  technology.
+
+- Old school
+  
+  Modification of a human-centric trading system focused on broker interfaces
+  and visualization technologies (charting).
+
+Whatever the orientation there are significant weaknesses to existing
+solutions:
+- most open source projects come with strings attached and are largely
+  inducements to purchase this or that commercial service or product.
+- build-your-own solutions need to be largely built from scratch.
+
+** system specification
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:42
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_CATEGORY: hyperq
+:END:
+
+hyperq is in an experimental phase and, as such, there is a need for flexibility
+in the top-down design of the system. To achieve this, the overall design is
+first being modelled using graphviz.  The current candidate system is:
+
+** other choices
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:43
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_OLPATH: market data feed/iqfeed
+:ARCHIVE_CATEGORY: hyperq
+:END:
+[[http://www.strategyquant.com/tickdatadownloader/][Tick Data Downloader]]
+[[http://www.kinetick.com/features][Kinetick - Streaming real time quotes and historical market data - features]]
+
+** NEXT haskell interfacing
+:PROPERTIES:
+:ARCHIVE_TIME: 2013-06-13 Thu 08:45
+:ARCHIVE_FILE: ~/projects/hyperq/hyperq.org
+:ARCHIVE_OLPATH: market data feed
+:ARCHIVE_CATEGORY: hyperq
+:ARCHIVE_TODO: NEXT
+:END:
+*** NEXT Iqtest development
+SCHEDULED: <2013-06-03 Mon>
+:LOGBOOK:
+CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
+:END:
+:PROPERTIES:
+:tangle:   haskell/hyperqdev/Iqtest.hs
+:END:
+

@@ -1,9 +1,9 @@
-module Test.Utils (
+module TestUtils (
     testWithProvider
   , (@=~?)
   , (?=~@)
   , (=~)
- ) where
+  ) where
 
 import qualified Test.Framework as TF
 import qualified Test.Framework.Providers.HUnit as TFH
@@ -36,12 +36,12 @@ testWithProvider testGroupName testFunction =
 -- "Almost equal" assertions for HUnit
 (@=~?) :: (Show a, AEq a) => a -> a -> HU.Assertion
 (@=~?) expected actual = expected =~ actual HU.@? assertionMsg
-    where
-      assertionMsg = "Expected : " ++ show expected ++
-                     "\nActual : " ++ show actual
+  where
+    assertionMsg = "Expected : " ++ show expected ++
+                   "\nActual : " ++ show actual
 
 (?=~@) :: (Show a, AEq a) => a -> a -> HU.Assertion
 (?=~@) actual expected = actual =~ expected HU.@? assertionMsg
-    where
-      assertionMsg = "Actual : " ++ show actual ++
-                     "\nExpected : " ++ show expected
+  where
+    assertionMsg = "Actual : " ++ show actual ++
+                   "\nExpected : " ++ show expected

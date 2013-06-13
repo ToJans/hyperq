@@ -3,13 +3,11 @@ module Main (
     main
  ) where
 
-
 import Test.Framework
-
-
-import Test.Utils
 import Test.HUnit
-import Dot
+
+import Hyperq.Dot
+import TestUtils
 
 main :: IO ()
 main = defaultMain tests

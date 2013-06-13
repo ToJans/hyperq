@@ -1,9 +1,9 @@
 module Main where
 
-import qualified EchoBackground
+import qualified Hyperq.EchoBackground as E
 
 main :: IO ()
 main = do
-       s <- EchoBackground.runString
-       putStrLn s
-       return ()
+    s <- E.runString
+    putStrLn s
+    return ()

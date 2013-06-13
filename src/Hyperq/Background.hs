@@ -1,11 +1,14 @@
-module Background (Work
-                  ,SendWork
-                  ,spawnWorkers
-                  ,testRun)
-    where
+module Hyperq.Background (
+    Work
+  , SendWork
+  , spawnWorkers
+  , testRun
+  ) where
 
 import Control.Monad
+    ( replicateM, replicateM_, when )
 import Control.Concurrent
+    ( ThreadId, forkIO, myThreadId, threadDelay )
 import Control.Exception as E
 import Control.Concurrent.STM
 

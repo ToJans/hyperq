@@ -2,7 +2,6 @@
 :set -package QuickCheck
 :set -package test-framework
 :set -package test-framework-hunit
-:set -package test-framework-quickcheck2
 :set -package containers
 :set -package text
 :set -package graphviz

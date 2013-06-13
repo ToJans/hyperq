@@ -1,35 +1,33 @@
-module ControllerTest 
-( importDotFile
-, printGraph
-, nodeList
-, edgeList
-, comp
-, dir
-, comm
-, commChan
-, commRB
-, comb
-, buffs
-, main
-) where
+module Hyperq.Dot ( 
+    importDot
+  , importDotFile
+  , printGraph
+  , nodeList
+  , edgeList
+  , comp
+  , dir
+  , comm
+  , commChan
+  , commRB
+  , comb
+  , buffs
+  ) where
 
 import Data.GraphViz
-import Data.GraphViz.Attributes.Complete
---import Data.GraphViz.Types
+    ( DotGraph, parseDotGraph, printDotGraph, nodeID, toNode, fromNode
+    , nodeAttributes, edgeAttributes, graphNodes, graphEdges, NodeLookup
+    , nodeInformationClean, edgeInformationClean, DotNode(..) )
+import Data.GraphViz.Attributes.Complete as Att
 import qualified Data.Text.Lazy as L
 import qualified Data.Text.Lazy.IO as I
--- import qualified Data.GraphViz.Types.Generalised as G
--- import Data.Graph.Inductive.Graph
+import Data.List 
+    ( union )
 import qualified Data.Map as Map
-import Data.List (union)
-import Data.RingBuffer
-import Data.RingBuffer.Vector
-
-
--- import Data.RingBuffer.Types
-
 import Control.Arrow
+    ( (&&&) )
 
+importDot :: String -> DotGraph String
+importDot = parseDotGraph . L.pack
 
 importDotFile :: FilePath -> IO (DotGraph String)
 importDotFile f = do
@@ -53,28 +51,28 @@ data CompType = Internal
 
 comp :: DotGraph String -> [(String, CompType)]
 comp g = zip name s where
-     name = map nodeID n
-     s =  map (compType . nodeAttributes) n
-     n = toDotNodes $ nodeInformationClean True g
+    name = map nodeID n
+    s =  map (compType . nodeAttributes) n
+    n = toDotNodes $ nodeInformationClean True g
 
 toDotNodes :: (Ord n) => NodeLookup n -> [DotNode n]
 toDotNodes = map (\(n,(_,as)) -> DotNode n as) . Map.assocs
 
-dir :: [Attribute] -> DirType
-dir [] = Forward
+dir :: [Att.Attribute] -> DirType
+dir [] = Att.Forward
 dir x = 
-    let d = [a | Dir a <- x]
+    let d = [a | Att.Dir a <- x]
     in case d of
-       [] -> Forward
+       [] -> Att.Forward
        _ -> head d
 
-compType :: [Attribute] -> CompType
+compType :: [Att.Attribute] -> CompType
 compType [] = Internal
 compType x = 
-    let d = [a | Shape a <- x]
+    let d = [a | Att.Shape a <- x]
     in case d of
        [] -> Internal
-       [Egg] -> External
+       [Att.Egg] -> External
        _ -> Internal
 
 comm :: DotGraph String -> [(String, String, DirType)]
@@ -84,16 +82,11 @@ comm g = zip3 from to d where
      from = map fromNode e
      to = map toNode e
 
-data CommType = Read 
-              | Write
-              deriving Show
-
-
-commChan :: (String, String, DirType) -> [(String, String, CommType)]
-commChan (f,t,Both)          = [(f,t,Write)
-                               ,(f,t,Read)]
-commChan (f,t,Forward)       = [(f,t,Write)]
-commChan (f,t,Back)          = [(f,t,Read)]
+commChan :: (String, String, DirType) -> [(String, String, String)]
+commChan (f,t,Both)          = [(f,t,"Write")
+                               ,(f,t,"Read")]
+commChan (f,t,Forward)       = [(f,t,"Write")]
+commChan (f,t,Back)          = [(f,t,"Read")]
 commChan _                   = []
 
 commRB :: (String, String, DirType) -> [(String, String)]
@@ -109,4 +102,3 @@ comb (x:xs) = Map.insertWith union (fst x) [snd x] (comb xs)
 
 buffs :: DotGraph String -> Map.Map String [String]
 buffs g = comb $ concatMap commRB $ comm g
-

@@ -274,17 +274,15 @@ Before you know it, you'll be wanting to be a hyperq_t and join in the fun.
 SCHEDULED: <2013-06-10 Mon>
 
 
-- [ ] travis
-     data-ringbuffer will require separate build as follows:
-
-     git clone http://github.com/simonmichael/hledger.git
-     cd hledger
-     cabal update
-     cabal install ./hledger-lib ./hledger [./hledger-web]
-
-     http://hledger.org/INSTALL.html
-
-* one day
+- [ ] code cleanup
+    - [ ] style guide adherence
+    - [ ] commenting haddock style
+        - expand type sigs?
+    - [ ] haddock build
+- [ ] list of enhanvements
+- [ ] org cleanup
+    - [ ] R removal
+    - [ ] blog removal (?)
 - [ ] haskell test for iq
     - [ ] wine solution in travis
     - [ ] iqfeed addition for travis (or download)
@@ -293,12 +291,54 @@ SCHEDULED: <2013-06-10 Mon>
 - [ ] contact http://tradingphysics.com/
 
 * technology stack
+** project design choices
+
+There are several design features that drive hyperq and we hope offer
+a comparative advantage:
+
+- *HFT on a budget*: Development is focused on using the cheapest technologies
+  where no free option exists.
+- *literate programming documentation*: markets are complex and so is large-scale project
+  code. The heart of this project is experimentation with how to go about
+  large-scale project formulation using a literate programming ethic.
+- *fast AND smart*: much HFT trading is about pure speed - being the first to
+  react to an obvious mis-pricing, front-running a lazy or half-hidden market
+  order are two obvious examples. We believe there is a gap in the market that
+  can be exploited between pure-speed HFT and human-intervention algo trading
+  that the project is all about.
+- *meta-algo*: the entire system and process is an algorithm to be searched,
+  optimised and refactored.
+- *open source*: hyperq is open source purely and simply, licenced
+  under the generous Apache system.
+- *modern toolkit*: the project is oriented towards using higher-level
+  languages and concepts for rapid, robust development. Together with a
+  literate programming style, this translates to using the right tool for the
+  right job and making less compromises with the goals of the project.
+
+
+
 
 The world of high frequency trading is a broad church of opinion,
 technology, ideas and motivations. hyperq is currently being developed using many
 different tools.
 
-*** [[http://www.gnu.org/software/emacs/][emacs]],
+** TODO [[http://www.haskell.org/haskellwiki/Haskell][haskell]]
+
+- re-write with haskell pros and cons
+
+The candidate solution to the design criteria is to use haskell for the system coding:
+
+- haskell has already been used for this purpose :  http://www.starling-software.com/misc/icfp-2009-cjs.pdf
+- concurrency is handled quite gracefully:
+  http://www.haskell.org/haskellwiki/Concurrency_demos
+  http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/beautiful.pdf
+- speed is an issue but haskell can often get to within a factor of two versus
+  C code. Haskell also plays nicely with other languages so there is room for
+  hand-crafting critical sections in C.
+- other solutions had issues. Erlang is too wierd and slow, node.js leads to
+  callback hell; C, C++ and Java lead to a much larger code base.
+
+** [[http://www.gnu.org/software/emacs/][emacs]],
 [[http://orgmode.org][org-mode]] and
 [[http://en.wikipedia.org/wiki/Literate_programming][literate
 programming]]
@@ -320,7 +360,7 @@ between coding environments and languages, whilst still remaining
 Similarly, a project such as hyperq is as much about communication between
 human beings as it is about maintenance of source code.
 
-*** [[http://www.r-project.org][R]]
+** [[http://www.r-project.org][R]]
 
 R is a strongly functional but imperative language being used for rapid
 development and research of hft and algo ideas as they arise. Most
@@ -328,13 +368,7 @@ everything that you can think of (databases, broker interfaces,
 statistical analysis, visualization) has an R package ready to get you
 up and going in 5 minutes.
 
-*** [[http://www.haskell.org/haskellwiki/Haskell][haskell]]
-
-R can be many things but what it is least set up for is development of
-asyncronous code. To fill this gap, the project is using haskell to
-frame the system as and when it develops.
-
-*** [[http://www.interactivebrokers.com/en/main.php][Interactive
+** [[http://www.interactivebrokers.com/en/main.php][Interactive
 Brokers]]
 
 Eventually, the hft schema will be broker independent but during the development
@@ -345,7 +379,7 @@ and (eventually) the project can also run out of the box.
 Interactive Brokers consolidates tick data into 0.3 second time slices
 so it isn't appropriate for low-latency work.
 
-*** [[http://www.iqfeed.net][iqfeed]]
+** [[http://www.iqfeed.net][iqfeed]]
 
 Just because it's open-source doesn't mean that it's cost free. iqfeed
 has been chosen as an initial data feed to base project R&D efforts on.
@@ -359,8 +393,7 @@ to purshase iqfeed.
 
 
 
-** innovations
-The technology stack on which hyperq is being built is rapidly evolving.
+** Open Source Options
 *** zipline
 CLOSED: [2013-04-23 Tue 15:11]
 :LOGBOOK:
@@ -450,83 +483,35 @@ https://gist.github.com/cmahon/e72e0e08de2986c2180d
 
 
 
-* project design
+
+** other system components and projects
+
+[[http://www.activequant.org][ActiveQuant]]
+[[https://github.com/Neverlord/libcppa][libcppa]]
+[[http://esper.codehaus.org][esper]]
+[[http://triceps.sourceforge.net][triceps]]
+[[http://code.google.com/p/cep-trader/][cep-trader]]
+[[http://algo-trader.googlecode.com][algo-trader]]
+[[http://code.google.com/p/tradelink/][tradelink]]
+[[http://artstkmkt.sourceforge.net/][ASM]]
+[[https://github.com/penberg/libtrading][libtrading]]
+[[https://github.com/dakka/fix8][fix]]
+[[http://tradexoft.wordpress.com/][tradexoft]]
+
+https://github.com/andykent/river
+  I like the idea of pushing data through queries (rather than
+  queries through data).
+
+http://www.quickfixengine.org/quickfix/doc/html/about.html
+  major broker API
+
+
+
+* runtime design
 
 The solution space for a highish-frequency, automated, algorithmic trading
 system is wide. Most solutions out there are propietary, expensive and
 expansive.
-
-** existing design choice
-
-The typical system platform choices for the aspiring fast trader can be boiled down
-to a few options:
-
-- pure HFT
-  
-  Proprietary real-time event processing that almost has to be in a language with no garbage
-  collection (C, C++ or Java) to avoid millisec delays (ie low
-  latency processes).
-  - dedicated co-located servers
-  - real-time order book analytics
-  - real-time price information streams 
-  - algorithms 'hard-wired'
-
-- Big Data 
-
-  A statistical R&D undertaking using matlab, R, julia and fast database
-  technology.
-
-- Old school
-  
-  Modification of a human-centric trading system focused on broker interfaces
-  and visualization technologies (charting).
-
-Whatever the orientation there are significant weaknesses to existing
-solutions:
-- most open source projects come with strings attached and are largely
-  inducements to purchase this or that commercial service or product.
-- build-your-own solutions need to be largely built from scratch. 
-
-
-
-** project design choices
-
-There are several design features that drive hyperq and we hope offer
-a comparative advantage:
-
-- *HFT on a budget*: Development is focused on using the cheapest technologies
-  where no free option exists.
-- *literate programming documentation*: markets are complex and so is large-scale project
-  code. The heart of this project is experimentation with how to go about
-  large-scale project formulation using a literate programming ethic.
-- *fast AND smart*: much HFT trading is about pure speed - being the first to
-  react to an obvious mis-pricing, front-running a lazy or half-hidden market
-  order are two obvious examples. We believe there is a gap in the market that
-  can be exploited between pure-speed HFT and human-intervention algo trading
-  that the project is all about.
-- *meta-algo*: the entire system and process is an algorithm to be searched,
-  optimised and refactored.
-- *open source*: hyperq is open source purely and simply, licenced
-  under the generous Apache system.
-- *modern toolkit*: the project is oriented towards using higher-level
-  languages and concepts for rapid, robust development. Together with a
-  literate programming style, this translates to using the right tool for the
-  right job and making less compromises with the goals of the project.
-
-** Haskell as a core language
-
-The candidate solution to the design criteria is to use haskell for the system coding:
-
-- haskell has already been used for this purpose :  http://www.starling-software.com/misc/icfp-2009-cjs.pdf
-- concurrency is handled quite gracefully:
-  http://www.haskell.org/haskellwiki/Concurrency_demos
-  http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/beautiful.pdf
-- speed is an issue but haskell can often get to within a factor of two versus
-  C code. Haskell also plays nicely with other languages so there is room for
-  hand-crafting critical sections in C.
-- other solutions had issues. Erlang is too wierd and slow, node.js leads to
-  callback hell; C, C++ and Java lead to a much larger code base.
-
 
 ** Design Experimentation                                            :design:
 CLOSED: [2013-04-11 Thu 16:46]
@@ -634,81 +619,8 @@ digraph G {
 }
 #+end_src
 ** design -> code automation
-*** haskell interaction
 
-Via haskell, the dot chart can be the specifications for an actual system as well as a
-representation. And via svg technology, the picture can also be modified to
-be a reporting front-end in a production environment.
-
-So, a new picture generates a new system with potentially new components
-(nodes) and messaging requirements (edges).
-
-*** edges
-:PROPERTIES:
-:blog:
-:END:
-
-#+begin_src haskell :results value
-import ControllerTest
-g <- importDotFile "../candidate.dot"
-edgeList g
-#+end_src
-
-| exchange         | aggregator       |
-| aggregator       | localport        |
-| observer         | databases        |
-| controller       | eventalgo        |
-| disruptor        | listener         |
-| disruptor        | eventalgo        |
-| disruptor        | controller       |
-| controller       | disruptor        |
-| broker           | brokeraggregator |
-| brokeraggregator | trader           |
-| localport        | observer         |
-| controller       | localport        |
-| localport        | disruptor        |
-| listener         | observer         |
-| controller       | observer         |
-| controller       | trader           |
-| controller       | offwirealgo      |
-| databases        | offwirealgo      |
-| trader           | observer         |
-| eventalgo        | observer         |
-| offwirealgo      | observer         |
-
-
-*** nodes
-
-#+begin_src haskell
-import ControllerTest
-import Data.List
-g <- importDotFile "../dot/candidate.dot"
-map (\x -> [x]) $ nodeList g
-#+end_src
-
-| aggregator       |
-| broker           |
-| brokeraggregator |
-| controller       |
-| databases        |
-| disruptor        |
-| eventalgo        |
-| exchange         |
-| listener         |
-| localport        |
-| observer         |
-| offwirealgo      |
-| trader           |
-
-
-
-* system specification
-
-hyperq is in an experimental phase and, as such, there is a need for flexibility
-in the top-down design of the system. To achieve this, the overall design is
-first being modelled using graphviz.  The current candidate system is:
-
-** candidate svg dot file
+*** candidate svg dot file
 
 #+begin_src dot :file img/candidate.svg :cmdline -Kdot -Tsvg :exports both
 digraph G {
@@ -804,6 +716,79 @@ There are several ideas that are being tested:
   robustness testing)
 
 
+
+
+*** haskell interaction
+
+Via haskell, the dot chart can be the specifications for an actual system as well as a
+representation. And via svg technology, the picture can also be modified to
+be a reporting front-end in a production environment.
+
+So, a new picture generates a new system with potentially new components
+(nodes) and messaging requirements (edges).
+
+*** edges
+:PROPERTIES:
+:blog:
+:END:
+
+#+begin_src haskell :results value
+import ControllerTest
+g <- importDotFile "../candidate.dot"
+edgeList g
+#+end_src
+
+| exchange         | aggregator       |
+| aggregator       | localport        |
+| observer         | databases        |
+| controller       | eventalgo        |
+| disruptor        | listener         |
+| disruptor        | eventalgo        |
+| disruptor        | controller       |
+| controller       | disruptor        |
+| broker           | brokeraggregator |
+| brokeraggregator | trader           |
+| localport        | observer         |
+| controller       | localport        |
+| localport        | disruptor        |
+| listener         | observer         |
+| controller       | observer         |
+| controller       | trader           |
+| controller       | offwirealgo      |
+| databases        | offwirealgo      |
+| trader           | observer         |
+| eventalgo        | observer         |
+| offwirealgo      | observer         |
+
+
+*** nodes
+
+#+begin_src haskell
+import ControllerTest
+import Data.List
+g <- importDotFile "../dot/candidate.dot"
+map (\x -> [x]) $ nodeList g
+#+end_src
+
+| aggregator       |
+| broker           |
+| brokeraggregator |
+| controller       |
+| databases        |
+| disruptor        |
+| eventalgo        |
+| exchange         |
+| listener         |
+| localport        |
+| observer         |
+| offwirealgo      |
+| trader           |
+
+
+
+
+
+* NEXT event feed
 ** feed component
 :PROPERTIES:
 :tangle:   dot/iqcontroller.dot
@@ -841,123 +826,70 @@ There are several ideas that are being tested:
 #+results:
 [[file:img/iqtest.png]]
 
-
-
-
-* NEXT market data feed
-** Market Feed Selection
-CLOSED: [2013-04-12 Thu 12:46]
+** Event Feed Design
+CLOSED: [2013-04-30 Tue 10:48]
 :LOGBOOK:
-- State "DONE"       from ""           [2013-04-11 Thu 16:46]
+- State "DONE"       from ""           [2013-04-30 Tue 10:48]
 :END:
 :PROPERTIES:
 :blog:     t
 :top:      t
 :END:
 
-There is no such thing as live market data for free (please let us know if
-this is wrong!).
+The hyperq_team is currently looking at development priorities and, whilst
+the votes aren't all in, designing and building the event feed is a hot
+favorite.  At the moment, the component is labeled as a market data stream but I'd like
+to broaden the definition.  
 
-The closest to free data is the Interactive Brokers feed.  IB consolidate
-market data and post every 0.3 seconds however, making it unsuitable for
-testing lower-latency ideas.
+Concentrating solely on market trades, bids and asks for an individual
+security in an effort to fully understand what's happening with price is a
+dangerous activity. We think there's a lot to be gained by /always/ accounting
+for broad market conditions /before/ you start to do statistical analytics on
+a particular security. Before you decide that =goog= is <insert forecast
+metaphor here>, you should check first as to whether the overall =market= is
+<insert forecast here> as well. If you look really, really closely, you
+might find that the =market= starts trending /before/ =goog= does, and you
+have yourself an immediate edge.
 
-Initial testing of market data is concentrating on [[http://www.iqfeed.net/][iqfeed]].
-- iqfeed is the cheapest "unencumbered" market data feed option
-- it can be downloaded for free and a demo account used for testing (data is
-  delayed)
-- 5.0 has just been released and this includes millisecond resolution for
-  both trade and quote times.
+This statistical arbitrage analogy can be extended beyond market data into
+market news flow. As a human, if I see a news item on Google, the very first next
+thing I do is look at recent Google price movements. If this could be automated (and it
+can) a news flow can trigger a recent order history lookup, a calculation of
+'price spikiness', a switch to including the security in the event stream.
+With 1000 news flow items a day we're going to find a handful of fat pitch
+opportunities.
 
-Now the bad news:
-- iqfeed exists only as windows software
-- the process is hardwired to communicate via a tcp connection.
-- the feed has a habit of going down several times a day so that there will
-  be gaps in the event stream.
-- you will need a login id and password to use the software which you get in
-  a free trial
+Even more broadly, social media news flow is evolving rapidly and could be a
+great source of automated idea generation.  A recent example, and fellow
+startup is http://www.ftsee.com/.  Machine-readable news flow, json-based API,
+easy ticker lookups - it's going to be a joy hooking this up after the pain
+involved with old and creaking market data feed APIs.
 
+So I wonder what we'll find when we crunch the correlations between intra-day
+returns and intra-day ftsee sentiment?  If we do find something I'm not sure we'll
+be telling unless you're a contributor ;)
 
+The concept of an event stream can also be extended towards events that happen
+inside the hyperq internals. If the internet goes down or (more likely) my son
+hacks into the dedicated line to steam the latest 30gig TF2 upgrade, then
+that's an event much more important than any external data streaming in (or
+not streaming in). Stop calculating the finer nuances of market stochastics,
+please, and start prepping for panic trading on link resumption.  Another
+example is the risk management component - knowing that near-term P&L is
+dependent on a few key positions should mean that event processing needs to
+be prioritized for these securities.  And the best and fastest way to get at
+event processors may well be a message sent via the event stream.
 
-
-** choices
-
-There is no such thing as live market data for free (please let us know if
-this is wrong!).
-
-The closest to free data is the Interactive Brokers feed.  IB consolidate
-market data and post every 0.3 seconds however, making it unsuitable for
-testing lower-latency ideas.
-
-Initial testing of market data is concentrating on [[http://www.iqfeed.net/][iqfeed]].
-- iqfeed is the cheapest "unencumbered" market data feed option
-- it can be downloaded for free and a demo account used for testing (data is
-  delayed)
-
-Now the bad news:
-- iqfeed exists only as windows software 
-- the process is hardwired to communicate via a tcp connection. 
-- version 4.9 does not include millisec information.  5.0 does though and is
-  coming to the free client (eventually).
-- the feed has a habit of going down several times a day so that there will
-  be gaps in the event stream.
-- you will need a login id and password to use the software which you get in
-  a free trial
+So we're thinking about an event stream very broadly and including concepts
+other than market data and even external data. I think we can think this way
+because of our commitment to a modern multi-toolkit over the pure speed java
+approach. You can do things in haskell that can't be imagined in imperative
+languages, and you can create things with a multi-tool structure that can't
+be created in any single language.
 
 
-** iqfeed
 
-*** other choices
-[[http://www.strategyquant.com/tickdatadownloader/][Tick Data Downloader]]
-[[http://www.kinetick.com/features][Kinetick - Streaming real time quotes and historical market data - features]]
-
-*** Port comms
-
-There are 4 main communication points to iqfeed:
-
-Level1Port 	5009 	Streaming Level 1 Data and News
-Level2Port 	9200 	Streaming Market Depth and NASDAQ Level 2 Data
-LookupPort 	9100 	Historical Data, Symbol Lookup, News Lookup, and Chains Lookup information
-AdminPort 	9300 	Connection data and management.
-
-More information can be obtained at [[https://www.iqfeed.net/dev/api/docsBeta/Introduction.cfm][DTN IQFeed Developer Area]] or https://www.iqfeed.net/dev/main.cfm
-(for a price).
-
-*** Setup info
-
-iqfeed is available for download via
-http://www.iqfeed.net/index.cfm?displayaction=support&section=download
-
-Personally, my development environment is on a mac so I need to start and
-manage the process via wine.
-
-From the command line:
-
-For the demo product (delayed feed):
-#+begin_src sh
-wine "Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe" -product IQFEED_DEMO -version 1
-#+end_src
-
-#+begin_src sh
-nc localhost 5009
-#+end_src
-
-For a live account:
-#+begin_src sh
-wine "Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe" ‑product yourproductid ‑version 0.1 ‑login yourlogin ‑password yourpassword -autoconnect -savelogininfo
-#+end_src
-
-** NEXT haskell interfacing
-*** NEXT Iqtest development
-SCHEDULED: <2013-06-03 Mon>
-:LOGBOOK:
-CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
-:END:
-:PROPERTIES:
-:tangle:   haskell/hyperqdev/Iqtest.hs
-:END:
-
-**** dev notes
+** dev notes
 - things that need to be (step 1)
   - a logon process
   - a delay if we are logging on
@@ -1049,7 +981,80 @@ CLOCK: [2013-03-24 Sun 17:15]--[2013-03-26 Tue 11:26] => 42:11
     - manager (connection management)
     - main
 
-** Latency Research                                               :research:
+
+
+
+** market feed choices
+CLOSED: [2013-04-12 Thu 12:46]
+:LOGBOOK:
+- State "DONE"       from ""           [2013-04-11 Thu 16:46]
+:END:
+:PROPERTIES:
+:blog:     t
+:top:      t
+:END:
+
+There is no such thing as live market data for free (please let us know if
+this is wrong!).
+
+The closest to free data is the Interactive Brokers feed.  IB consolidate
+market data and post every 0.3 seconds however, making it unsuitable for
+testing lower-latency ideas.
+
+Initial testing of market data is concentrating on [[http://www.iqfeed.net/][iqfeed]].
+- iqfeed is the cheapest "unencumbered" market data feed option
+- it can be downloaded for free and a demo account used for testing (data is
+  delayed)
+- 5.0 has just been released and this includes millisecond resolution for
+  both trade and quote times.
+
+Now the bad news:
+- iqfeed exists only as windows software
+- the process is hardwired to communicate via a tcp connection.
+- the feed has a habit of going down several times a day so that there will
+  be gaps in the event stream.
+- you will need a login id and password to use the software which you get in
+  a free trial
+
+*** iqfeed
+
+**** Port comms
+
+There are 4 main communication points to iqfeed:
+
+Level1Port 	5009 	Streaming Level 1 Data and News
+Level2Port 	9200 	Streaming Market Depth and NASDAQ Level 2 Data
+LookupPort 	9100 	Historical Data, Symbol Lookup, News Lookup, and Chains Lookup information
+AdminPort 	9300 	Connection data and management.
+
+More information can be obtained at [[https://www.iqfeed.net/dev/api/docsBeta/Introduction.cfm][DTN IQFeed Developer Area]] or https://www.iqfeed.net/dev/main.cfm
+(for a price).
+
+**** Setup info
+
+iqfeed is available for download via
+http://www.iqfeed.net/index.cfm?displayaction=support&section=download
+
+Personally, my development environment is on a mac so I need to start and
+manage the process via wine.
+
+From the command line:
+
+For the demo product (delayed feed):
+#+begin_src sh
+wine "Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe" -product IQFEED_DEMO -version 1
+#+end_src
+
+#+begin_src sh
+nc localhost 5009
+#+end_src
+
+For a live account:
+#+begin_src sh
+wine "Z:\\Users\\tonyday\\wine\\iqfeed\\iqconnect.exe" ‑product yourproductid ‑version 0.1 ‑login yourlogin ‑password yourpassword -autoconnect -savelogininfo
+#+end_src
+
+** Latency Research                                             :research:R:
 CLOSED: [2013-04-12 Thu 16:46]
 :LOGBOOK:
 - State "DONE"       from ""           [2013-04-11 Thu 16:46]
@@ -1297,69 +1302,7 @@ From the R database of the one day quote ticks...
 
 
 
-** Event Feed Design
-CLOSED: [2013-04-30 Tue 10:48]
-:LOGBOOK:
-- State "DONE"       from ""           [2013-04-30 Tue 10:48]
-:END:
-:PROPERTIES:
-:blog:     t
-:top:      t
-:END:
-
-The hyperq_team is currently looking at development priorities and, whilst
-the votes aren't all in, designing and building the event feed is a hot
-favorite.  At the moment, the component is labeled as a market data stream but I'd like
-to broaden the definition.  
-
-Concentrating solely on market trades, bids and asks for an individual
-security in an effort to fully understand what's happening with price is a
-dangerous activity. We think there's a lot to be gained by /always/ accounting
-for broad market conditions /before/ you start to do statistical analytics on
-a particular security. Before you decide that =goog= is <insert forecast
-metaphor here>, you should check first as to whether the overall =market= is
-<insert forecast here> as well. If you look really, really closely, you
-might find that the =market= starts trending /before/ =goog= does, and you
-have yourself an immediate edge.
-
-This statistical arbitrage analogy can be extended beyond market data into
-market news flow. As a human, if I see a news item on Google, the very first next
-thing I do is look at recent Google price movements. If this could be automated (and it
-can) a news flow can trigger a recent order history lookup, a calculation of
-'price spikiness', a switch to including the security in the event stream.
-With 1000 news flow items a day we're going to find a handful of fat pitch
-opportunities.
-
-Even more broadly, social media news flow is evolving rapidly and could be a
-great source of automated idea generation.  A recent example, and fellow
-startup is http://www.ftsee.com/.  Machine-readable news flow, json-based API,
-easy ticker lookups - it's going to be a joy hooking this up after the pain
-involved with old and creaking market data feed APIs.
-
-So I wonder what we'll find when we crunch the correlations between intra-day
-returns and intra-day ftsee sentiment?  If we do find something I'm not sure we'll
-be telling unless you're a contributor ;)
-
-The concept of an event stream can also be extended towards events that happen
-inside the hyperq internals. If the internet goes down or (more likely) my son
-hacks into the dedicated line to steam the latest 30gig TF2 upgrade, then
-that's an event much more important than any external data streaming in (or
-not streaming in). Stop calculating the finer nuances of market stochastics,
-please, and start prepping for panic trading on link resumption.  Another
-example is the risk management component - knowing that near-term P&L is
-dependent on a few key positions should mean that event processing needs to
-be prioritized for these securities.  And the best and fastest way to get at
-event processors may well be a message sent via the event stream.
-
-So we're thinking about an event stream very broadly and including concepts
-other than market data and even external data. I think we can think this way
-because of our commitment to a modern multi-toolkit over the pure speed java
-approach. You can do things in haskell that can't be imagined in imperative
-languages, and you can create things with a multi-tool structure that can't
-be created in any single language.
-
-
-* R database
+* R database                                                              :R:
 
 Experimenting with the mmap package in R, using this as a roll-your-own column database.
 
@@ -3702,6 +3645,132 @@ Ways to perform forecasting
 
 
 
+* references
+** messaging
+
+http://msgpack.org/
+
+[[http://code.google.com/p/protobuf-net/][Protocol Buffers]] 
+[[https://code.google.com/p/quickfast/][FAST]] 
+[[http://activequant.org/svn/aq2o/trunk/base/src/main/proto/messages.proto][ActiveQuant Google Protocol Buffer example]]
+
+http://programmers.stackexchange.com/questions/121592/what-to-look-for-in-selecting-a-language-for-algorithmic-high-frequency-trading
+
+http://stackoverflow.com/questions/731233/activemq-or-rabbitmq-or-zeromq-or
+
+http://wiki.msgpack.org/pages/viewpage.action?pageId=1081387
+
+http://kenai.com/downloads/javafx-sam/EventProcessinginAction.pdf
+
+http://coffeeonesugar.wordpress.com/2009/07/21/getting-started-with-esper-in-5-
+minutes/
+
+
+** links to HN discussions
+
+https://news.ycombinator.com/item?id=5550930
+
+http://prof7bit.github.io/goxtool/
+
+https://github.com/fmstephe/matching_engine
+
+https://github.com/brotchie/ib-zmq
+
+https://github.com/brotchie/r-zerotws
+
+http://hackage.haskell.org/package/HLearn-algebra
+
+http://bitcoin.clarkmoody.com/
+
+** disruptor
+
+The disruptor scheme is at the center of many peoples thinking about
+low-latency and process design for HFT, and the benchmark for cutting-edge low-latency.
+
+The key concepts (and this is a lame list to get started - please read the
+references) include:
+
+- the disruptor is a queue designed with the idea that queues are most often
+  empty or full. The queue is a cyclical array (called a ring buffer) with a
+  buffer size equal to a power of 2.
+- (often) having a single writer (called producer) to avoid cache line contention
+- multiple readers (consumers) that have dependency relationships with each
+  other with these dependencies known to the queue.
+- checks (memory barriers) simply guarding queue over- and under- runs (producers
+  getting too far ahead or consumers being too fast)
+- polling information (on producers and consumers) via the queue.  Recent
+  post og the groups suggest consumer polling might be better. 
+- achieving lock-free concurrency via producer separation and consumer
+  tracking (called the consumer cursor)
+- avoids (L2?) cache misses with variable padding
+- in recent times, the 'worker pool' is leading to large performance
+  gains (I don't know what it is exactly - just repeating the group
+  discussions)
+
+I'd be interested in feedback on porting these concepts to haskell:
+- I don't see anything in hackage remotely similar, but I do see plenty of
+  comparable concepts like cache-miss avoidance, STM worker pools etc etc. 
+- this would provide quite a good reference for how much slower haskell is
+  compared with imperative-style methods.
+- (for me), the translation of the concepts to haskell is difficult.  So much
+  of the disruptor design pattern is imperative (do this exactly given system
+  architecture). Thinking in terms of promises and 'what is' may lead to a
+  very different look and feel, and good insight as to the differences
+  haskell brings to the problem domain.
+- I suspect that haskell could start to perform very well when there are
+  multiple writers (producers) and when there are a large number of
+  interdependent readers (consumers). I have zero proof of this - just a gut
+  feel.
+- if there is a need to get closer to the metal than haskell can offer, it's
+  best to find this out now and understand why. In this case I imagine the
+  disruptor as a language-independent messaging solution superior to Protocol Buffers.
+
+
+A few references to help:
+
+Active info/code hubs
+
+Main project
+[[https://github.com/LMAX-Exchange/disruptor]]
+http://lmax-exchange.github.io/disruptor/
+
+Collections
+https://github.com/LMAX-Exchange/LMAXCollections
+
+Interesting OSS using disruptor
+http://storm-project.net/
+
+Clojure Library and DSL
+http://userevents.github.io/phaser/
+
+Blogs
+http://blogs.lmax.com/
+
+Martin Thompson blog
+http://mechanical-sympathy.blogspot.co.uk/
+
+Michael Barker blog
+http://bad-concurrency.blogspot.com.au
+
+
+Less active/reference
+
+https://github.com/fsaintjacques/disruptor--
+Performance in C++ is way down compared to main java repo.
+
+Main technical Doc (2 years old now)
+https://github.com/LMAX-Exchange/disruptor/tree/master/docs
+
+trisha's posts
+
+http://mechanitis.blogspot.com.au/2011/06/dissecting-disruptor-whats-so-special.html
+
+Original Martin Fowler piece
+[[http://martinfowler.com/articles/lmax.html][Martin Fowler]]
+
+http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
+
+
 * gh-pages production
 
 #+STYLE_DIR: ../style
@@ -3894,185 +3963,5 @@ limitations under the License.</p>
 
 
 
-
-
-* references
-** articles
-
-http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
-
-http://programmers.stackexchange.com/questions/121592/what-to-look-for-in-selecting-a-language-for-algorithmic-high-frequency-trading
-
-http://stackoverflow.com/questions/731233/activemq-or-rabbitmq-or-zeromq-or
-
-http://wiki.msgpack.org/pages/viewpage.action?pageId=1081387
-
-http://kenai.com/downloads/javafx-sam/EventProcessinginAction.pdf
-
-** algo
-
-*** sornette
-
-http://arxiv.org/find/all/1/all:+sornette/0/1/0/all/0/1
-
-some specific articles
-
-http://arxiv.org/pdf/cond-mat/0301543.pdf
-http://arxiv.org/pdf/1108.0077.pdf
-http://arxiv.org/ftp/arxiv/papers/1012/1012.4118.pdf
-http://arxiv.org/pdf/1011.2882.pdf
-http://arxiv.org/pdf/1007.2420.pdf
-http://arxiv.org/pdf/0909.1007.pdf
-http://arxiv.org/ftp/arxiv/papers/0812/0812.2449.pdf
-http://arxiv.org/pdf/0909.1007.pdf
-
-
-
-** other system components and projects
-
-[[http://www.activequant.org][ActiveQuant]]
-[[https://github.com/Neverlord/libcppa][libcppa]]
-[[http://esper.codehaus.org][esper]]
-[[http://triceps.sourceforge.net][triceps]]
-[[http://code.google.com/p/cep-trader/][cep-trader]]
-[[http://algo-trader.googlecode.com][algo-trader]]
-[[http://code.google.com/p/tradelink/][tradelink]]
-[[http://artstkmkt.sourceforge.net/][ASM]]
-[[https://github.com/penberg/libtrading][libtrading]]
-[[https://github.com/dakka/fix8][fix]]
-[[http://tradexoft.wordpress.com/][tradexoft]]
-
-https://github.com/andykent/river
-  I like the idea of pushing data through queries (rather than
-  queries through data).
-
-http://www.quickfixengine.org/quickfix/doc/html/about.html
-  major broker API
-
-** messaging
-
-
-http://msgpack.org/
-
-[[http://code.google.com/p/protobuf-net/][Protocol Buffers]] 
-[[https://code.google.com/p/quickfast/][FAST]] 
-[[http://activequant.org/svn/aq2o/trunk/base/src/main/proto/messages.proto][ActiveQuant Google Protocol Buffer example]]
-
-http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
-
-http://programmers.stackexchange.com/questions/121592/what-to-look-for-in-selecting-a-language-for-algorithmic-high-frequency-trading
-
-http://stackoverflow.com/questions/731233/activemq-or-rabbitmq-or-zeromq-or
-
-http://wiki.msgpack.org/pages/viewpage.action?pageId=1081387
-
-http://kenai.com/downloads/javafx-sam/EventProcessinginAction.pdf
-
-http://coffeeonesugar.wordpress.com/2009/07/21/getting-started-with-esper-in-5-
-minutes/
-
-
-
-** links to HN discussions
-
-https://news.ycombinator.com/item?id=5550930
-
-http://prof7bit.github.io/goxtool/
-
-https://github.com/fmstephe/matching_engine
-
-https://github.com/brotchie/ib-zmq
-
-https://github.com/brotchie/r-zerotws
-
-http://hackage.haskell.org/package/HLearn-algebra
-
-http://bitcoin.clarkmoody.com/
-
-** disruptor
-
-The disruptor scheme is at the center of many peoples thinking about
-low-latency and process design for HFT, and the benchmark for cutting-edge low-latency.
-
-The key concepts (and this is a lame list to get started - please read the
-references) include:
-
-- the disruptor is a queue designed with the idea that queues are most often
-  empty or full. The queue is a cyclical array (called a ring buffer) with a
-  buffer size equal to a power of 2.
-- (often) having a single writer (called producer) to avoid cache line contention
-- multiple readers (consumers) that have dependency relationships with each
-  other with these dependencies known to the queue.
-- checks (memory barriers) simply guarding queue over- and under- runs (producers
-  getting too far ahead or consumers being too fast)
-- polling information (on producers and consumers) via the queue.  Recent
-  post og the groups suggest consumer polling might be better. 
-- achieving lock-free concurrency via producer separation and consumer
-  tracking (called the consumer cursor)
-- avoids (L2?) cache misses with variable padding
-- in recent times, the 'worker pool' is leading to large performance
-  gains (I don't know what it is exactly - just repeating the group
-  discussions)
-
-I'd be interested in feedback on porting these concepts to haskell:
-- I don't see anything in hackage remotely similar, but I do see plenty of
-  comparable concepts like cache-miss avoidance, STM worker pools etc etc. 
-- this would provide quite a good reference for how much slower haskell is
-  compared with imperative-style methods.
-- (for me), the translation of the concepts to haskell is difficult.  So much
-  of the disruptor design pattern is imperative (do this exactly given system
-  architecture). Thinking in terms of promises and 'what is' may lead to a
-  very different look and feel, and good insight as to the differences
-  haskell brings to the problem domain.
-- I suspect that haskell could start to perform very well when there are
-  multiple writers (producers) and when there are a large number of
-  interdependent readers (consumers). I have zero proof of this - just a gut
-  feel.
-- if there is a need to get closer to the metal than haskell can offer, it's
-  best to find this out now and understand why. In this case I imagine the
-  disruptor as a language-independent messaging solution superior to Protocol Buffers.
-
-
-A few references to help:
-
-Active info/code hubs
-
-Main project
-[[https://github.com/LMAX-Exchange/disruptor]]
-http://lmax-exchange.github.io/disruptor/
-
-Collections
-https://github.com/LMAX-Exchange/LMAXCollections
-
-Interesting OSS using disruptor
-http://storm-project.net/
-
-Clojure Library and DSL
-http://userevents.github.io/phaser/
-
-Blogs
-http://blogs.lmax.com/
-
-Martin Thompson blog
-http://mechanical-sympathy.blogspot.co.uk/
-
-Michael Barker blog
-http://bad-concurrency.blogspot.com.au
-
-
-Less active/reference
-
-https://github.com/fsaintjacques/disruptor--
-Performance in C++ is way down compared to main java repo.
-
-Main technical Doc (2 years old now)
-https://github.com/LMAX-Exchange/disruptor/tree/master/docs
-
-trisha's posts
-
-http://mechanitis.blogspot.com.au/2011/06/dissecting-disruptor-whats-so-special.html
-
-Original Martin Fowler piece
-[[http://martinfowler.com/articles/lmax.html][Martin Fowler]]
 
 
