@@ -6,3 +6,5 @@
 :set -package text
 :set -package graphviz
 :set -package vector
+:set -package stm
+:set -package data-ringbuffer

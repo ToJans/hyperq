@@ -1,3 +1,4 @@
+-- using an MVector instead of stdin/stdout
 module Main where
 
 import qualified Hyperq.EchoBackground as E
