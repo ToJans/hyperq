@@ -12,8 +12,7 @@
 #+PROPERTY: comments link
 #+PROPERTY: noarchive t
 
-* NEXT immediate tasks
-SCHEDULED: <2013-06-10 Mon>
+* NEXT tasks
 
 - [ ] get travid build green
 - [ ] debug runString in EchoBackground.hs
