@@ -1,1 +1,0 @@
-Stamp,Code,Symbol,Most Recent Trade,Most Recent Trade Size,Most Recent Trade TimeMS,Extended Trade,Extended Trade Size,Extended Trade TimeMS,Total Volume,Bid,Bid Size,Bid TimeMS,Ask,Ask Size,Ask TimeMS,Message Contents,TickID,Last TimeMS,Extra1,Extra2
