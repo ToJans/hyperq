@@ -26,12 +26,12 @@ library
                    , Hyperq.IqFeed
                    , Hyperq.Background
                    , Hyperq.EchoBackground
+
   build-depends:     base >= 4 && < 5
                    , vector
                    , IORefCAS
                    , stm
                    , time
-                   , data-ringbuffer == 0.3.1
                    , graphviz
                    , text
                    , containers
@@ -43,15 +43,16 @@ library
                    , QuickCheck
                    , test-framework
                    , test-framework-hunit
+                   , data-ringbuffer
 
   default-language:  Haskell2010
   ghc-options:       -Wall -O2 -threaded
   ghc-prof-options:  -fprof-auto
   hs-source-dirs:    src
 
-Test-Suite test-dot
+Test-Suite test-hyperq
     type:               exitcode-stdio-1.0
-    main-is:            test-dot.hs
+    main-is:            test-hyperq.hs
     default-language:   Haskell2010
     ghc-options:        -threaded -Wall -O2
     hs-source-dirs:     test, src
@@ -60,7 +61,6 @@ Test-Suite test-dot
                       , QuickCheck
                       , test-framework
                       , test-framework-hunit
-                      -- , test-framework-quickcheck2
                       , containers
                       , text
                       , graphviz
@@ -68,6 +68,10 @@ Test-Suite test-dot
                       , time
                       , process
                       , network
+                      , stm
+                      , IORefCAS
+                      , vector
+                      , data-ringbuffer
 
 executable echo
   main-is:          exec-echo.hs
@@ -87,21 +91,22 @@ executable echo2
   ghc-options:      -threaded -Wall -O2
   hs-source-dirs:   test, src
   build-depends:    base
-                  , vector
-                  , IORefCAS
-                  , stm
-                  , time
-                  , data-ringbuffer
-
-executable dot
-  main-is:          exec-dot.hs
-  default-language: Haskell2010
-  ghc-options:      -threaded -Wall -O2
-  hs-source-dirs:   test, src
-  build-depends:    base
-                  , graphviz
-                  , text
-                  , containers
+                      , HUnit
+                      , QuickCheck
+                      , test-framework
+                      , test-framework-hunit
+                      , containers
+                      , text
+                      , graphviz
+                      , old-locale
+                      , time
+                      , process
+                      , network
+                      , stm
+                      , IORefCAS
+                      , vector
+                      , criterion
+                      , data-ringbuffer
 
 executable iq
   main-is:          exec-iq.hs

@@ -25,3 +25,6 @@ cabal-dev
 out
 /TAGS
 /src/Dot.o
+*.hi
+*.o
+/test/exec-debug

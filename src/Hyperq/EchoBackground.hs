@@ -4,7 +4,7 @@
 -- Experimentation with data-ringbuffer
 --
 -- This run replicates a simple echo using:
--- 
+--
 -- - Data.RingBuffer
 -- - Background: a worker pool of background threads
 
@@ -17,33 +17,34 @@ module Hyperq.EchoBackground (
    , concBatchPublishTo'
    ) where
 
-import Control.Applicative    
+import Control.Applicative
     ( (*>) )
 import Control.Concurrent
-    ( newEmptyMVar, putMVar , takeMVar, readMVar, MVar, killThread )
+    ( newEmptyMVar, putMVar , takeMVar, MVar, killThread )
 import Control.Concurrent.STM
     ( atomically )
 import Control.Monad
-    ( unless, forever )
+    ( unless, forever, when )
 import Data.Bits
     ( (.&.) )
 import Data.Char
     ( chr )
 import qualified Data.Vector.Fusion.Stream.Monadic as S
-import           Data.Vector.Generic.Mutable       
+import           Data.Vector.Generic.Mutable
     (mstream)
 import qualified Data.Vector.Mutable               as MV
 
 -- Data.RingBuffer (https://github.com/hyperq/data-ringbuffer) is a fork of
--- https://github.com/kim/data-ringbuffer to expose all modules 
+-- https://github.com/kim/data-ringbuffer to expose all modules
 import           Data.RingBuffer
-    ( nextBatch, publish, waitFor, newConsumer, newSequencer, newBarrier ) 
+    ( nextBatch, publish, waitFor, newConsumer, newSequencer, newBarrier
+    , nextSeq )
 import           Data.RingBuffer.Internal
-    ( readSeq, writeSeq )
+    ( writeSeq, readSeq, addAndGet, mkSeq )
 import           Data.RingBuffer.Types
-    ( Barrier(..), Consumer(..), Sequencer(..) )
+    ( Barrier(..), Consumer(..), Sequencer(..), Sequence )
 import           Data.RingBuffer.Vector
-    ( MVector(..), concPublishTo , newRingBuffer)
+    ( MVector(..), newRingBuffer)
 
 -- local helper modules
 import           Hyperq.Background
@@ -51,16 +52,22 @@ import           Hyperq.Background
 import           Util
     ( now, printTiming' )
 
--- | Publish Wrapper for Data.RingBuffer.Vector function, 
+-- | Publish Wrapper for Data.RingBuffer.Vector function,
 -- to extract the Sequence from Sequencer.
-concPublishTo' :: MVector Int -- ^ publishing buffer 
+concPublishTo' :: MVector Int -- ^ publishing buffer
                -> Int         -- ^ mod mask
                -> Sequencer   -- ^ contains the cursor
                -> Int         -- ^ value to be published
                -> IO ()
-concPublishTo' mv modm seqr@(Sequencer sq _) = 
+concPublishTo' mv modm seqr@(Sequencer sq _) =
     concPublishTo mv modm seqr sq
-{-# INLINE concPublishTo' #-}
+
+concPublishTo :: MVector Int -> Int -> Sequencer -> Sequence -> Int -> IO ()
+concPublishTo (MVector mvec) modm seqr sq v = do
+    next <- nextSeq seqr sq (MV.length mvec)
+    MV.unsafeWrite mvec (next .&. modm) v
+    publish seqr next 1
+
 
 -- not sure why the original function uses an explicit length
 concBatchPublishTo' :: MVector a -- ^ buffer
@@ -71,111 +78,108 @@ concBatchPublishTo' :: MVector a -- ^ buffer
 concBatchPublishTo' (MVector mvec) modm seqr@(Sequencer sq _) vs = do
     next <- nextBatch seqr sq len (MV.length mvec)
     mapM_ update $ zip [next - len + 1..next] vs
-    publish seqr next len
+    publish seqr (next+1) len
   where
     len = length vs
     update (n,x) = MV.unsafeWrite mvec (n .&. modm) x
-{-# INLINE concBatchPublishTo' #-}
 
--- | Consume from buffer. Altered consumeFrom to reference 
+-- | Consume from buffer. Altered consumeFrom to reference
 -- last consumed (upto) rather
 -- than next to be consumed (next)
-consumeFrom' :: MVector a  -- ^ buffer 
+consumeFrom' :: MVector Int  -- ^ buffer
              -> Int        -- ^ mod mask
              -> Barrier    -- ^ tracking cursors
-             -> Consumer a -- ^ a stream consumer (with cursor) 
+             -> Consumer Int -- ^ a stream consumer (with cursor)
              -> IO ()
 consumeFrom' (MVector mvec) modm barr (Consumer fn sq) = do
-    upto  <- readSeq sq
-    avail <- waitFor barr upto
-
-    let start = upto .&. modm
-        len   = avail - upto
-        (_,t) = MV.splitAt (start+1) mvec
+    next  <- addAndGet sq 1
+    avail <- waitFor barr next
+    let start = next .&. modm
+        len   = avail - next + 1
+        (_,t) = MV.splitAt start mvec
         tlen  = MV.length t
-
-    -- traceIO ("\ncon cursor, len, tlen " ++ (show upto)  ++ " " ++ 
-    --     (show len) ++ " " ++ (show tlen))
-    S.mapM_ fn . mstream . MV.take len $ t
+    S.mapM_ fn $ mstream $ MV.take len t
     unless (tlen >= len) $
         S.mapM_ fn . mstream . MV.take (len - tlen) $ mvec
 
     writeSeq sq avail
-{-# INLINE consumeFrom' #-}
 
 -- | Prints to stdout unless it encounters a 'q', in which case 
 -- it triggers shutdown
-printOrDone :: MVar Int -- ^ shutdown flag 
+printOrDone :: MVar Int -- ^ shutdown flag
             -> Int      -- ^ value
             -> IO ()
 printOrDone done x
     | toEnum x == 'q' = putMVar done 1
     | otherwise = putChar $ toEnum x
-                -- trace ("\nwriting a char " ++ (show (toEnum x :: Int))) x
 
 -- | Print to an MVector unless 'q' happens
-printOrDone' :: MVar Int    -- ^ shutdown flag 
-             -> MVector Int -- ^ vector being printed to
-             -> MVar Int    -- ^ vector size
+printOrDone' :: MVector Int -- ^ vector being printed to
+             -> Sequence    -- ^ vector size
+             -> MVar Int    -- ^ shutdown flag
              -> Int         -- ^ value
              -> IO ()
-printOrDone' done (MVector ans) mvc x
-    | toEnum x == 'q' = putMVar done 1
-    | otherwise = do
-                c <- readMVar mvc
-                _ <- MV.unsafeWrite ans c x                
-                _ <- putMVar mvc (c + 1)
-                return()
+printOrDone' (MVector ans) mvc done x = do
+    -- print "in printOrDone'"
+    c <- readSeq mvc
+    _ <- MV.unsafeWrite ans (c+1) x
+    _ <- writeSeq mvc (c + 1)
+    when (x == 113) $
+        putMVar done 1
+    return()
 
 -- | test run using stdin and stdout
--- todo: refactor run and runString
--- - answer and count associate with con and with final IO cleanup
+-- answer and count associate with con and with final IO cleanup
 run :: IO ()
 run = do
     done  <- newEmptyMVar
-    con   <- newConsumer (printOrDone done)
-    seqr  <- newSequencer [con]
-    buf   <- newRingBuffer bufferSize (0 :: Int)
-    start <- now
+    (con, seqr, buf, start) <- makeRb bufferSize (printOrDone done)
     (submit,_,ids) <- spawnWorkers 2
-    mapM_ (\x -> print $ ' ' : show x) ids
     atomically . submit . forever $ do
         c <- getChar
         concPublishTo' buf modmask seqr $ fromEnum c
     atomically . submit . forever
         $ consumeFrom' buf modmask (newBarrier seqr []) con
-    takeMVar done *> now >>= printTiming' start >> mapM_ killThread ids
+    takeMVar done *>
+        now >>= printTiming' start >>
+        mapM_ killThread ids
+
   where
     bufferSize = 1024*8
     modmask    = bufferSize - 1
 
 -- | test run using MVector
--- todo: refactor run and runString
-runString :: IO String
-runString = do
+runString :: String -> IO String
+runString s = do
     answer <- do
         m <- MV.replicate 100 0
         return(MVector m)
-    count <- newEmptyMVar
+    count <- mkSeq
     done  <- newEmptyMVar
-    con   <- newConsumer (printOrDone' done answer count)
-    seqr  <- newSequencer [con]
-    buf   <- newRingBuffer bufferSize (0 :: Int)
-    start <- now
-    (submit,_,ids) <- spawnWorkers 2
-    -- mapM_ (\x -> print $ ' ' : show x) ids
-    atomically . submit . forever $ do
-        mapM_ (concPublishTo' buf modmask seqr . fromEnum) 
-            "This is a test string"
-        return()
+    (con, seqr, buf, start) <- makeRb bufferSize
+                               (printOrDone' answer count done)
+    (submit,_,ids) <- spawnWorkers 3
+    atomically . submit $ mapM_
+        (concPublishTo' buf modmask seqr . fromEnum) s
     atomically . submit . forever
         $ consumeFrom' buf modmask (newBarrier seqr []) con
-    takeMVar done *> now >>= printTiming' start >> mapM_ killThread ids
-    c <- readMVar count
+    takeMVar done *>
+        now >>= printTiming' start >>
+        mapM_ killThread ids
+    c <- readSeq count
     let (MVector mvec) = answer
         (t,_) = MV.splitAt (c+1) mvec
-    s <- MV.unsafeRead t 1
-    return [chr s]
+    sOut <- mapM (MV.read t) [0..c]
+    return $ map chr sOut
   where
     bufferSize = 1024*8
     modmask    = bufferSize - 1
+
+makeRb :: Int -> (a -> IO ()) ->
+          IO (Consumer a, Sequencer, MVector Int, Double)
+makeRb bufferSize conFn = do
+    con   <- newConsumer conFn
+    seqr  <- newSequencer [con]
+    buf   <- newRingBuffer bufferSize (0 :: Int)
+    start <- now
+    return(con, seqr, buf, start)

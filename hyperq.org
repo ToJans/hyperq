@@ -14,13 +14,10 @@
 
 * NEXT tasks
 
-- [ ] get travid build green
-- [ ] debug runString in EchoBackground.hs
 - [ ] haskell test for iq
     - [ ] wine solution in travis
     - [ ] iqfeed addition for travis (or download)
 - [ ] r -> haskell
-- [ ] incorporate system specs 
 - [ ] contact http://tradingphysics.com/
 
 * technology stack
@@ -660,5 +657,6 @@ Original Martin Fowler piece
 [[http://martinfowler.com/articles/lmax.html][Martin Fowler]]
 
 http://www.aurorasolutions.org/over-6-million-transactions-per-second-in-a-real-time-system-an-out-of-the-box-approach/
+
 
 

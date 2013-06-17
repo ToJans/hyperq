@@ -7,4 +7,5 @@
 :set -package graphviz
 :set -package vector
 :set -package stm
-:set -package data-ringbuffer
+:set -package criterion
+:set -package IORefCAS

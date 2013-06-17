@@ -1,11 +1,20 @@
-module Util
-  ( printTiming
-  , printTiming'
-  , now
-  ) where
+module Util (
+      printTiming
+    , printTiming'
+    , now
+    , dbg
+    ) where
 
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Text.Printf           (printf)
+import Debug.Trace (trace)
+
+dbg :: (Show a) => String -> a -> a
+dbg = dbgsh show
+
+dbgsh :: (a -> String) -> String -> a -> a
+dbgsh sh msg x = trace (msg++sh x) x
+
 
 now :: IO Double
 now = realToFrac `fmap` getPOSIXTime
