@@ -11,8 +11,10 @@
 module Hyperq.EchoBackground (
    -- * testing imperatives
      run
+   , run'
    , runString
-
+   , runString'
+   , makeCon
    -- * unused functions
    , concBatchPublishTo'
    ) where
@@ -23,6 +25,8 @@ import Control.Concurrent
     ( newEmptyMVar, putMVar , takeMVar, MVar, killThread )
 import Control.Concurrent.STM
     ( atomically )
+import Control.Exception.Base
+    ( evaluate )
 import Control.Monad
     ( unless, forever, when )
 import Data.Bits
@@ -183,3 +187,52 @@ makeRb bufferSize conFn = do
     buf   <- newRingBuffer bufferSize (0 :: Int)
     start <- now
     return(con, seqr, buf, start)
+
+-- | make an RB connection
+makeCon :: IO [Int] -- sequencer function
+        -> (MVar Int -> Int -> IO ()) -- consumer function
+        -> IO (MVar Int)
+makeCon seqrFn conFn = do
+    done  <- newEmptyMVar
+    (con, seqr, buf, start) <- makeRb bufferSize (conFn done)
+    (submit,_,ids) <- spawnWorkers 2
+    atomically . submit . forever $ do
+        next <- seqrFn
+        mapM_ (concPublishTo' buf modmask seqr) next
+    atomically . submit . forever
+        $ consumeFrom' buf modmask (newBarrier seqr []) con
+    takeMVar done *>
+        now >>= printTiming' start >>
+        mapM_ killThread ids
+    return done
+  where
+    bufferSize = 1024*8
+    modmask    = bufferSize - 1
+
+-- | using makeCon
+-- There is a bug in this where the string is published three time,
+-- due to the forever do pattern used in makeCon 
+runString' :: String -> IO String
+runString' s = do
+    answer <- do
+        m <- MV.replicate 1000 0
+        return(MVector m)
+    count <- mkSeq
+    let seqrFn = evaluate $ map fromEnum s
+        conFn = printOrDone' answer count
+    _ <- makeCon seqrFn conFn
+    c <- readSeq count
+    let (MVector mvec) = answer
+        (t,_) = MV.splitAt (c+1) mvec
+    sOut <- mapM (MV.read t) [0..c]
+    return $ map chr sOut
+
+-- | simple echo ring buffer
+run' :: IO ()
+run' = do
+    let seqrFn = do
+            c <- getLine
+            return $ map fromEnum c
+        conFn = printOrDone
+    _ <- makeCon seqrFn conFn
+    return ()

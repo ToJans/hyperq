@@ -13,12 +13,18 @@
 #+PROPERTY: noarchive t
 
 * NEXT tasks
-
+- [ ] hookup iq to rb via dot
 - [ ] haskell test for iq
     - [ ] wine solution in travis
     - [ ] iqfeed addition for travis (or download)
 - [ ] r -> haskell
 - [ ] contact http://tradingphysics.com/
+
+
+
+* 
+
+
 
 * technology stack
 ** project design choices
@@ -307,40 +313,6 @@ map (\x -> [x]) $ nodeList g
 
 
 * event feed
-** feed component
-:PROPERTIES:
-:tangle:   dot/iqfeed.dot
-:END:
-
-#+begin_src dot :file img/iqfeed.png :cmdline -Kdot -Tpng :exports both
-  digraph G {
-          node [label="\N"];
-          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
-          
-          subgraph cluster_feed {
-                  graph [label="feed control",
-                          color="#909090"];
-                  node [style=filled];
-                  controller;
-                  admin;
-                  controller -> admin [color="#aaaaaa",dir=both]
-          }
-          subgraph cluster_iqport {
-                  graph [label="iqport",
-                          color="#909090"];
-                  adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
-                  marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
-                  lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
-          }
-          
-          admin -> adminport [color="#aaaaaa",dir=both];
-          controller -> marketport [color="#aaaaaa", dir=both];
-          controller -> lookupport [color="#aaaaaa", dir=both];
-          controller -> stdin [color="#aaaaaa", dir=back]
-          controller -> stdout [color="#aaaaaa"]
-  }
-#+end_src
-
 ** Event Feed Design
 CLOSED: [2013-04-30 Tue 10:48]
 :LOGBOOK:
@@ -401,6 +373,53 @@ because of our commitment to a modern multi-toolkit over the pure speed java
 approach. You can do things in haskell that can't be imagined in imperative
 languages, and you can create things with a multi-tool structure that can't
 be created in any single language.
+
+
+
+** feed component development
+:PROPERTIES:
+:tangle:   dot/iqfeed.dot
+:END:
+
+#+begin_src dot :file dot/iqfeed.png :cmdline -Kdot -Tpng :exports both
+  digraph G {
+          node [label="\N"];
+          node [style=filled, color="#1f3950",fontcolor="#eeeeee",shape=box];
+          
+          subgraph cluster_feed {
+                  graph [label="feed control",
+                          color="#909090"];
+                  node [style=filled];
+                  controller;
+                  admin;
+                  controller -> admin [color="#aaaaaa",dir=both]
+          }
+          subgraph cluster_iqport {
+                  graph [label="iqport",
+                          color="#909090"];
+                  adminport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  marketport [shape=egg,color="#cc11cc22",fontcolor="#101010"];
+                  lookupport [shape=egg,color="#cc11cc22",fontcolor="#101010"]; 
+          }
+          
+          admin -> adminport [color="#aaaaaa",dir=both];
+          controller -> marketport [color="#aaaaaa", dir=both];
+          controller -> lookupport [color="#aaaaaa", dir=both];
+          controller -> stdin [color="#aaaaaa", dir=back]
+          controller -> stdout [color="#aaaaaa"]
+  }
+#+end_src
+
+#+results:
+[[file:dot/iqfeed.png]]
+
+Starting with the feed component graph above:
+
+- [ ] turn this into a list of ringbuffers and nodes
+- [ ] use these lists to construct the iqfeed control
+
+#+begin_src haskell
+#+end_src
 
 
 

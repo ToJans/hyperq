@@ -1,7 +1,7 @@
 module Main where
 
 import qualified Hyperq.EchoBackground as E
-    (run)
+    (run')
 
 main :: IO ()
-main = E.run
+main = E.run'
