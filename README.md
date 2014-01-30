@@ -1,6 +1,6 @@
-[![Build Status](https://secure.travis-ci.org/hyperq/hyperq.png)](http://travis-ci.org/hyperq/hyperq)
+![hyperq logo](http://hyperq.github.io/assets/hyperq-blue.png)
 
-http://hyperq.github.io/assets/hyperq-blue.png
+[![Build Status](https://secure.travis-ci.org/hyperq/hyperq.png)](http://travis-ci.org/hyperq/hyperq)
 
 [Main Site](http://hyperq.github.io)
 
